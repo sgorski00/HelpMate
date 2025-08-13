@@ -1,4 +1,5 @@
 up:
+	mvn clean package -DskipTests
 	docker compose up -d
 
 down:

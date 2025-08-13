@@ -9,11 +9,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import pl.sgorski.user_service.config.CustomJwtAuthenticationConverter;
 import pl.sgorski.user_service.config.SecurityConfig;
 import pl.sgorski.user_service.dto.UserDto;
 import pl.sgorski.user_service.exception.UserNotFoundException;
@@ -46,9 +44,6 @@ public class UserControllerTests {
 
     @MockitoBean
     private UserMapper userMapper;
-
-    @MockitoBean
-    private CustomJwtAuthenticationConverter customJwtAuthenticationConverter;
 
     @Autowired
     private MockMvc mockMvc;

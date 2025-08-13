@@ -1,7 +1,7 @@
 FROM eclipse-temurin:21-jre-alpine
 
 WORKDIR /app
-COPY user-service/target/*.jar app.jar
+COPY ticket-service/target/*.jar app.jar
 
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]

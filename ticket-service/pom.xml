@@ -9,9 +9,9 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>user-service</artifactId>
-	<name>user-service</name>
-	<description>User service for HelpMate</description>
+	<artifactId>ticket-service</artifactId>
+	<name>ticket-service</name>
+	<description>Ticket service for HelpMate</description>
 
 	<dependencies>
 		<dependency>
@@ -28,11 +28,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
+			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-validation</artifactId>
+			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.flywaydb</groupId>
@@ -70,7 +70,6 @@
 		<dependency>
 			<groupId>pl.sgorski</groupId>
 			<artifactId>helpmate-common-lib</artifactId>
-			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 
@@ -88,7 +87,7 @@
 				<groupId>org.flywaydb</groupId>
 				<artifactId>flyway-maven-plugin</artifactId>
 				<configuration>
-					<url>jdbc:postgresql://hm-psql-user:5432/${env.POSTGRES_USER_DB}</url>
+					<url>jdbc:postgresql://hm-psql-ticket:5432/${env.POSTGRES_TICKET_DB}</url>
 					<user>${env.POSTGRES_USER}</user>
 					<password>${env.POSTGRES_PASSWORD}</password>
 					<cleanDisabled>false</cleanDisabled>

@@ -16,6 +16,9 @@ import pl.sgorski.user_service.service.UserService;
 @RequiredArgsConstructor
 public class UserController {
 
+    //TODO: Add users deletion or deactivation
+    //TODO: Add Swagger docs
+
     private final UserService userService;
     private final JwtDecodeService jwtDecodeService;
     private final UserMapper userMapper;
