@@ -2,7 +2,7 @@ package pl.sgorski.user_service.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import pl.sgorski.user_service.dto.UserDto;
+import pl.sgorski.common.dto.UserDto;
 import pl.sgorski.user_service.model.User;
 
 @Mapper(componentModel = "spring")

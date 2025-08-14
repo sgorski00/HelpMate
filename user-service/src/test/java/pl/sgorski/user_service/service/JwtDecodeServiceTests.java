@@ -8,7 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.oauth2.jwt.Jwt;
-import pl.sgorski.user_service.dto.UserDto;
+import pl.sgorski.common.dto.UserDto;
 import pl.sgorski.user_service.mapper.UserMapper;
 import pl.sgorski.user_service.model.User;
 

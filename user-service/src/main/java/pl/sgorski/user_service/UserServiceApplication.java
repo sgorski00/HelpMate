@@ -7,7 +7,8 @@ import org.springframework.context.annotation.ComponentScan;
 @SpringBootApplication
 @ComponentScan(basePackages = {
 		"pl.sgorski.user_service",
-		"pl.sgorski.security"
+		"pl.sgorski.security",
+		"pl.sgorski.common",
 })
 public class UserServiceApplication {
 

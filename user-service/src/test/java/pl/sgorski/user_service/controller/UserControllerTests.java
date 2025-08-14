@@ -13,7 +13,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import pl.sgorski.user_service.config.SecurityConfig;
-import pl.sgorski.user_service.dto.UserDto;
+import pl.sgorski.common.dto.UserDto;
 import pl.sgorski.user_service.exception.UserNotFoundException;
 import pl.sgorski.user_service.mapper.UserMapper;
 import pl.sgorski.user_service.model.User;
@@ -52,11 +52,12 @@ public class UserControllerTests {
 
     @BeforeEach
     void setUp() {
-        userDto = new UserDto();
-        userDto.setUsername("testuser");
-        userDto.setFirstname("John");
-        userDto.setLastname("Doe");
-        userDto.setEmail("test@user.com");
+        userDto = new UserDto(
+                "testuser",
+                "test@user.com",
+                "John",
+                "Doe"
+        );
     }
 
     @Test

@@ -35,4 +35,9 @@ public class UserService {
     public Page<User> findAll(PageRequest pageRequest) {
         return userRepository.findAll(pageRequest);
     }
+
+    public User getUserById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User with id: " + id + " not found"));
+    }
 }

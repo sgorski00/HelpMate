@@ -5,7 +5,7 @@ import jakarta.validation.ConstraintViolation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
-import pl.sgorski.user_service.dto.UserDto;
+import pl.sgorski.common.dto.UserDto;
 import pl.sgorski.user_service.mapper.UserMapper;
 import pl.sgorski.user_service.model.User;
 
@@ -19,11 +19,12 @@ public class JwtDecodeService {
     private final UserMapper userMapper;
 
     public User getUser(Jwt jwt) {
-        UserDto user = new UserDto();
-        user.setUsername(getUsername(jwt));
-        user.setEmail(getEmail(jwt));
-        user.setFirstname(getFirstName(jwt));
-        user.setLastname(getLastName(jwt));
+        UserDto user = new UserDto(
+                getUsername(jwt),
+                getEmail(jwt),
+                getFirstName(jwt),
+                getLastName(jwt)
+        );
 
         Set<ConstraintViolation<UserDto>> violations = validator.validate(user);
         if(!violations.isEmpty()) {
