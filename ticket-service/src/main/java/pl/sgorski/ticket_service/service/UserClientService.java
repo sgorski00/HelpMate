@@ -16,7 +16,7 @@ public class UserClientService {
         this.keycloakTokenService = keycloakTokenService;
     }
 
-    public UserDto getUserById(Long userId) {
+    public UserDto getUserById(String userId) {
         return userServiceWebClient.get()
                 .uri("/api/internal/users/{id}", userId)
                 .header("Authorization", "Bearer " + keycloakTokenService.getServiceToken())

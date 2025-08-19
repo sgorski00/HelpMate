@@ -1,7 +1,11 @@
 package pl.sgorski.ticket_service.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import pl.sgorski.common.utils.AuthorityUtils;
 import pl.sgorski.ticket_service.dto.CreateTicketRequest;
 import pl.sgorski.ticket_service.exception.TicketNotFoundException;
 import pl.sgorski.ticket_service.maper.TicketMapper;
@@ -14,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TicketService {
 
+    private final UserClientService userClientService;
     private final TicketRepository ticketRepository;
     private final TicketMapper mapper;
 
@@ -27,11 +32,16 @@ public class TicketService {
                 .orElseThrow(() -> new TicketNotFoundException("Ticket not found with id: " + id));
     }
 
-    public List<Ticket> getAllAssignedTickets(Long assigneeId) {
+    public List<Ticket> getAllAssignedTickets(String assigneeId) {
         return ticketRepository.findAllByAssigneeId(assigneeId);
     }
 
-    public List<Ticket> getAllCreatedTickets(Long reporterId) {
-        return ticketRepository.findAllByReporterId(reporterId);
+    public Page<Ticket> getTicketsForCurrentUser(Authentication authentication, Pageable pageable) {
+        if (AuthorityUtils.isAdmin(authentication) || AuthorityUtils.isTechnician(authentication)) {
+            return ticketRepository.findAll(pageable);
+        }
+
+        var user = userClientService.getUserById(authentication.getName());
+        return ticketRepository.findAllByReporterId(user.id(), pageable);
     }
 }

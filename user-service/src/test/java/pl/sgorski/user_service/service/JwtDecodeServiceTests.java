@@ -2,7 +2,6 @@ package pl.sgorski.user_service.service;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -10,7 +9,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.oauth2.jwt.Jwt;
 import pl.sgorski.common.dto.UserDto;
-import pl.sgorski.common.utils.JwtUtils;
 import pl.sgorski.user_service.mapper.UserMapper;
 import pl.sgorski.user_service.model.User;
 
@@ -57,16 +55,12 @@ public class JwtDecodeServiceTests {
 
     @Test
     void shouldThrowIfNotValidData() {
-        String username = "testuser";
-        String email = "notanemail";
-        String firstName = "John";
-        String lastName = "Doe";
-
         //noinspection unchecked
         ConstraintViolation<UserDto> violation = mock(ConstraintViolation.class);
         when(validator.validate(any(UserDto.class))).thenReturn(Set.of(violation));
 
         assertThrows(IllegalArgumentException.class, () -> jwtDecodeService.getUser(jwt));
+
         verify(userMapper, never()).toUser(any(UserDto.class));
     }
 }

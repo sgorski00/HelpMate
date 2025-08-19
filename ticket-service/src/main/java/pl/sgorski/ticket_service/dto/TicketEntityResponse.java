@@ -7,8 +7,8 @@ public record TicketEntityResponse (
         String title,
         String description,
         String status,
-        Long reporterId,
-        Long assigneeId,
+        String reporterId,
+        String assigneeId,
         Timestamp createdAt,
         Timestamp updatedAt
 )

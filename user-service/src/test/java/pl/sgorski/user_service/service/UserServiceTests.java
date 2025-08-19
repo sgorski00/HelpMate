@@ -1,17 +1,13 @@
 package pl.sgorski.user_service.service;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.oauth2.jwt.Jwt;
-import pl.sgorski.common.utils.JwtUtils;
 import pl.sgorski.user_service.exception.UserNotFoundException;
 import pl.sgorski.user_service.model.User;
 import pl.sgorski.user_service.repository.UserRepository;
@@ -41,27 +37,23 @@ public class UserServiceTests {
 
     @Test
     void shouldCreateUserIfNotExists() {
-        when(userRepository.findByUsername(anyString())).thenReturn(Optional.empty());
+        when(jwt.getSubject()).thenReturn("test-user-id");
+        when(userRepository.findById(anyString())).thenReturn(Optional.empty());
         when(jwtDecodeService.getUser(any())).thenReturn(new User());
-        try (MockedStatic<?> mockedJwtUtils = mockStatic(JwtUtils.class)) {
-            mockedJwtUtils.when(() -> JwtUtils.getUsername(any())).thenReturn("testuser");
 
-            userService.crateUserIfNotExists(jwt);
+        userService.crateUserIfNotExists(jwt);
 
-            verify(userRepository, times(1)).save(any(User.class));
-        }
+        verify(userRepository, times(1)).save(any(User.class));
     }
 
     @Test
     void shouldNotCreateUserIfExists() {
-        when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(new User()));
-        try (MockedStatic<?> mockedJwtUtils = mockStatic(JwtUtils.class)) {
-            mockedJwtUtils.when(() -> JwtUtils.getUsername(any())).thenReturn("testuser");
+        when(jwt.getSubject()).thenReturn("test-user-id");
+        when(userRepository.findById(anyString())).thenReturn(Optional.of(new User()));
 
-            userService.crateUserIfNotExists(jwt);
+        userService.crateUserIfNotExists(jwt);
 
-            verify(userRepository, never()).save(any(User.class));
-        }
+        verify(userRepository, never()).save(any(User.class));
     }
 
     @Test

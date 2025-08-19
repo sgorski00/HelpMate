@@ -6,7 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
-import pl.sgorski.common.utils.JwtUtils;
 import pl.sgorski.user_service.exception.UserNotFoundException;
 import pl.sgorski.user_service.model.User;
 import pl.sgorski.user_service.repository.UserRepository;
@@ -20,7 +19,7 @@ public class UserService {
     private final UserRepository userRepository;
 
     public void crateUserIfNotExists(Jwt jwt) {
-        userRepository.findByUsername(JwtUtils.getUsername(jwt))
+        userRepository.findById(jwt.getSubject())
                 .ifPresentOrElse(u -> {}, () -> {
                     User user = jwtDecodeService.getUser(jwt);
                     userRepository.save(user);
@@ -37,7 +36,7 @@ public class UserService {
         return userRepository.findAll(pageRequest);
     }
 
-    public User getUserById(Long id) {
+    public User getUserById(String id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User with id: " + id + " not found"));
     }

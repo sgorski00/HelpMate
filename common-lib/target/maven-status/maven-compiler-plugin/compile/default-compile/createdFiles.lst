@@ -1,2 +1,3 @@
 pl\sgorski\common\dto\UserDto.class
+pl\sgorski\common\utils\AuthorityUtils.class
 pl\sgorski\security\CustomJwtAuthenticationConverter.class

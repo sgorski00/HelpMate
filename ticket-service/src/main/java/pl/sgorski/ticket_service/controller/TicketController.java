@@ -2,12 +2,14 @@ package pl.sgorski.ticket_service.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import pl.sgorski.ticket_service.dto.CreateTicketRequest;
 import pl.sgorski.ticket_service.maper.TicketMapper;
 import pl.sgorski.ticket_service.service.TicketService;
-import pl.sgorski.ticket_service.service.UserClientService;
 
 @RestController
 @RequestMapping("/api/tickets")
@@ -16,24 +18,31 @@ public class TicketController {
 
     private final TicketService ticketService;
     private final TicketMapper ticketMapper;
-    private final UserClientService userClientService;
 
     @PostMapping
     public ResponseEntity<?> createTicket(@Valid @RequestBody CreateTicketRequest createTicketRequest) {
+        //TODO: users id must exists when creating a ticket
         var ticket = ticketService.createTicket(createTicketRequest);
         return ResponseEntity.ok(ticketMapper.toDto(ticket));
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TECHNICIAN') or @ticketSecurity.isTicketCreator(#id, authentication.name)")
     public ResponseEntity<?> getTicketById(@PathVariable Long id) {
-        //TODO: check if user can access this ticket (admin, technician - always can, user - only if he created this ticket [reportedId == userid])
         var ticket = ticketService.getTicketById(id);
         return ResponseEntity.ok(ticketMapper.toDto(ticket));
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllTickets() {
-        //todo: implement this method - admins should see all tickets, technician - when his id == assigneeId, user - only his tickets
-        return null;
+    public ResponseEntity<?> getAllTickets(
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "10") Integer size,
+            Authentication authentication
+    ) {
+        PageRequest pageRequest = PageRequest.of(page - 1, size);
+        var tickets = ticketService.getTicketsForCurrentUser(authentication, pageRequest);
+        return ResponseEntity.ok(tickets.stream()
+                .map(ticketMapper::toDto)
+                .toList());
     }
 }

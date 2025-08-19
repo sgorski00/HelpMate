@@ -27,10 +27,10 @@ public class Ticket {
     private TicketStatus status;
 
     @Column(nullable = false)
-    private Long reporterId;
+    private String reporterId;
 
     @Column(nullable = false)
-    private Long assigneeId;
+    private String assigneeId;
 
     @CreationTimestamp
     private Timestamp createdAt;

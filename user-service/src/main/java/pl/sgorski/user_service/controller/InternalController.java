@@ -20,7 +20,7 @@ public class InternalController {
 
     @GetMapping("/users/{id}")
     public ResponseEntity<?> getUserById(
-            @PathVariable Long id
+            @PathVariable String id
     ) {
         User user = userService.getUserById(id);
         return ResponseEntity.ok(userMapper.toDto(user));
