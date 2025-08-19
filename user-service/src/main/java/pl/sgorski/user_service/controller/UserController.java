@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
+import pl.sgorski.common.utils.JwtUtils;
 import pl.sgorski.user_service.mapper.UserMapper;
 import pl.sgorski.user_service.model.User;
 import pl.sgorski.user_service.service.JwtDecodeService;
@@ -25,7 +26,7 @@ public class UserController {
 
     @GetMapping("/me")
     public ResponseEntity<?> getLoggedUser(@AuthenticationPrincipal Jwt jwt) {
-        String username = jwtDecodeService.getUsername(jwt);
+        String username = JwtUtils.getUsername(jwt);
         User user = userService.getUserByUsername(username);
         return ResponseEntity.ok(userMapper.toDto(user));
     }

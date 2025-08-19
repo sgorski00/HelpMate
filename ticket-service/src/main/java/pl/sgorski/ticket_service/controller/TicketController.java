@@ -26,7 +26,7 @@ public class TicketController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getTicketById(@PathVariable Long id) {
-        //TODO: check id user can access this ticket (admin, technician - always can, user - only if he created this ticket [reportedId == userid])
+        //TODO: check if user can access this ticket (admin, technician - always can, user - only if he created this ticket [reportedId == userid])
         var ticket = ticketService.getTicketById(id);
         return ResponseEntity.ok(ticketMapper.toDto(ticket));
     }

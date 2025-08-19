@@ -11,6 +11,8 @@ import pl.sgorski.user_service.model.User;
 
 import java.util.Set;
 
+import static pl.sgorski.common.utils.JwtUtils.*;
+
 @Service
 @RequiredArgsConstructor
 public class JwtDecodeService {
@@ -32,25 +34,5 @@ public class JwtDecodeService {
         }
 
         return userMapper.toUser(user);
-    }
-
-    public String getUsername(Jwt jwt) {
-        return getClaim(jwt, "preferred_username");
-    }
-
-    public String getEmail(Jwt jwt) {
-        return getClaim(jwt, "email");
-    }
-
-    public String getFirstName(Jwt jwt) {
-        return getClaim(jwt, "given_name");
-    }
-
-    public String getLastName(Jwt jwt) {
-        return getClaim(jwt, "family_name");
-    }
-
-    private String getClaim(Jwt jwt, String claimName) {
-        return jwt.getClaimAsString(claimName);
     }
 }
