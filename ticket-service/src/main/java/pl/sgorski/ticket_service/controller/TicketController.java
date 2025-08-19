@@ -21,7 +21,6 @@ public class TicketController {
 
     @PostMapping
     public ResponseEntity<?> createTicket(@Valid @RequestBody CreateTicketRequest createTicketRequest) {
-        //TODO: users id must exists when creating a ticket
         var ticket = ticketService.createTicket(createTicketRequest);
         return ResponseEntity.ok(ticketMapper.toDto(ticket));
     }

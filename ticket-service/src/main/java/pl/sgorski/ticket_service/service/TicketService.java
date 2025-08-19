@@ -24,6 +24,7 @@ public class TicketService {
 
     public Ticket createTicket(CreateTicketRequest ticket) {
         Ticket newTicket = mapper.toTicket(ticket);
+        //todo: check if users exists by id, reporter - always, assignee - if provided
         return ticketRepository.save(newTicket);
     }
 

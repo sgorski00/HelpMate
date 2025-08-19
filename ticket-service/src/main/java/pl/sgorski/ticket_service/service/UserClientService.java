@@ -24,4 +24,9 @@ public class UserClientService {
                 .bodyToMono(UserDto.class)
                 .block();
     }
+
+    public boolean userExistsById(String userId) {
+        //todo: implement this method to check if a user exists by ID
+        return false;
+    }
 }

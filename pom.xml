@@ -24,6 +24,7 @@
         <module>ticket-service</module>
         <module>user-service</module>
         <module>common-lib</module>
+        <module>coverage-aggregator</module>
     </modules>
 
     <properties>
