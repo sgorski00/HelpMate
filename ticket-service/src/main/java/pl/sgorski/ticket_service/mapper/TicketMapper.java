@@ -1,4 +1,4 @@
-package pl.sgorski.ticket_service.maper;
+package pl.sgorski.ticket_service.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -13,6 +13,8 @@ public interface TicketMapper {
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "reporterId", ignore = true)
+    @Mapping(target = "assigneeId", ignore = true)
     Ticket toTicket(CreateTicketRequest request);
 
     @Mapping(target = "status", source = "status.displayName")

@@ -9,6 +9,9 @@ import pl.sgorski.common.dto.UserDto;
 import pl.sgorski.user_service.mapper.UserMapper;
 import pl.sgorski.user_service.model.User;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Service
@@ -24,7 +27,8 @@ public class JwtDecodeService {
                 getUsername(jwt),
                 getEmail(jwt),
                 getFirstName(jwt),
-                getLastName(jwt)
+                getLastName(jwt),
+                getRolesNames(jwt)
         );
 
         Set<ConstraintViolation<UserDto>> violations = validator.validate(user);
@@ -35,23 +39,36 @@ public class JwtDecodeService {
         return userMapper.toUser(user);
     }
 
-    public static String getUsername(Jwt jwt) {
+    public Set<String> getRolesNames(Jwt jwt) {
+        try {
+            Map<String, List<String>> realmAccess = jwt.getClaim("realm_access");
+            if(realmAccess.get("roles") instanceof List<String> list) {
+                return new HashSet<>(list);
+            }else {
+                throw new IllegalArgumentException("Invalid roles format in JWT");
+            }
+        } catch (Exception e) {
+            return Set.of();
+        }
+    }
+
+    public String getUsername(Jwt jwt) {
         return getClaim(jwt, "preferred_username");
     }
 
-    public static String getEmail(Jwt jwt) {
+    public String getEmail(Jwt jwt) {
         return getClaim(jwt, "email");
     }
 
-    public static String getFirstName(Jwt jwt) {
+    public String getFirstName(Jwt jwt) {
         return getClaim(jwt, "given_name");
     }
 
-    public static String getLastName(Jwt jwt) {
+    public String getLastName(Jwt jwt) {
         return getClaim(jwt, "family_name");
     }
 
-    private static String getClaim(Jwt jwt, String claimName) {
+    private String getClaim(Jwt jwt, String claimName) {
         return jwt.getClaimAsString(claimName);
     }
 }

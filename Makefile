@@ -28,3 +28,6 @@ backup-keycloak:
 psql-user:
 	docker compose exec -it postgres-user psql -U admin -d hm_user_db
 
+psql-ticket:
+	docker compose exec -it postgres-ticket psql -U admin -d hm_ticket_db
+

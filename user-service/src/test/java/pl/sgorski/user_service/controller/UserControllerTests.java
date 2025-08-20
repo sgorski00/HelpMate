@@ -2,33 +2,31 @@ package pl.sgorski.user_service.controller;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import pl.sgorski.user_service.config.SecurityConfig;
 import pl.sgorski.common.dto.UserDto;
-import pl.sgorski.user_service.exception.UserNotFoundException;
+import pl.sgorski.common.exception.UserNotFoundException;
 import pl.sgorski.user_service.mapper.UserMapper;
 import pl.sgorski.user_service.model.User;
 import pl.sgorski.user_service.service.JwtDecodeService;
 import pl.sgorski.user_service.service.UserService;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -59,7 +57,8 @@ public class UserControllerTests {
                 "testuser",
                 "test@user.com",
                 "John",
-                "Doe"
+                "Doe",
+                Set.of("ROLE_USER")
         );
     }
 

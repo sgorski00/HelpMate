@@ -1,4 +1,4 @@
-package pl.sgorski.ticket_service.exception;
+package pl.sgorski.common.exception;
 
 public class TicketNotFoundException extends RuntimeException {
 

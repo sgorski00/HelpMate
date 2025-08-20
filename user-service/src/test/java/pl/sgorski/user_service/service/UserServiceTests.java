@@ -8,7 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.oauth2.jwt.Jwt;
-import pl.sgorski.user_service.exception.UserNotFoundException;
+import pl.sgorski.common.exception.UserNotFoundException;
 import pl.sgorski.user_service.model.User;
 import pl.sgorski.user_service.repository.UserRepository;
 

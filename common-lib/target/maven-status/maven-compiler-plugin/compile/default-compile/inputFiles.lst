@@ -1,3 +1,8 @@
 D:\apps\HelpMate\common-lib\src\main\java\pl\sgorski\security\CustomJwtAuthenticationConverter.java
+D:\apps\HelpMate\common-lib\src\main\java\pl\sgorski\common\exception\TicketNotFoundException.java
+D:\apps\HelpMate\common-lib\src\main\java\pl\sgorski\common\exception\GlobalExceptionHandler.java
 D:\apps\HelpMate\common-lib\src\main\java\pl\sgorski\common\utils\AuthorityUtils.java
+D:\apps\HelpMate\common-lib\src\main\java\pl\sgorski\common\exception\UserNotFoundException.java
 D:\apps\HelpMate\common-lib\src\main\java\pl\sgorski\common\dto\UserDto.java
+D:\apps\HelpMate\common-lib\src\main\java\pl\sgorski\common\exception\IllegalStatusChangeException.java
+D:\apps\HelpMate\common-lib\src\main\java\pl\sgorski\common\exception\NotCompatibleRoleException.java

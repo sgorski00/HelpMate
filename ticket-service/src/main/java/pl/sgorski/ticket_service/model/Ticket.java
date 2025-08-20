@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import pl.sgorski.common.exception.IllegalStatusChangeException;
+import pl.sgorski.ticket_service.dto.CreateTicketRequest;
+import pl.sgorski.ticket_service.dto.UpdateTicketRequest;
 
 import java.sql.Timestamp;
 
@@ -43,5 +46,25 @@ public class Ticket {
         if (status == null) {
             status = TicketStatus.OPEN;
         }
+    }
+
+    public void update(UpdateTicketRequest ticketRequest) {
+        if(!isModifiable()) {
+            throw new IllegalStatusChangeException("Cannot update ticket with status " + this.status);
+        }
+        this.title = ticketRequest.title();
+        this.description = ticketRequest.description();
+    }
+
+    public void setStatus(TicketStatus status) {
+        if(isModifiable()) {
+            this.status = status;
+        } else {
+            throw new IllegalStatusChangeException("Cannot change ticket status from " + this.status + " to " + status);
+        }
+    }
+
+    private boolean isModifiable() {
+        return this.status.equals(TicketStatus.OPEN) || this.status.equals(TicketStatus.IN_PROGRESS);
     }
 }
