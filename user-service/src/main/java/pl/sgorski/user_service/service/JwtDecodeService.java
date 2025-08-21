@@ -5,10 +5,13 @@ import jakarta.validation.ConstraintViolation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
-import pl.sgorski.user_service.dto.UserDto;
+import pl.sgorski.common.dto.UserDto;
 import pl.sgorski.user_service.mapper.UserMapper;
 import pl.sgorski.user_service.model.User;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Service
@@ -19,11 +22,14 @@ public class JwtDecodeService {
     private final UserMapper userMapper;
 
     public User getUser(Jwt jwt) {
-        UserDto user = new UserDto();
-        user.setUsername(getUsername(jwt));
-        user.setEmail(getEmail(jwt));
-        user.setFirstname(getFirstName(jwt));
-        user.setLastname(getLastName(jwt));
+        UserDto user = new UserDto(
+                jwt.getSubject(),
+                getUsername(jwt),
+                getEmail(jwt),
+                getFirstName(jwt),
+                getLastName(jwt),
+                getRolesNames(jwt)
+        );
 
         Set<ConstraintViolation<UserDto>> violations = validator.validate(user);
         if(!violations.isEmpty()) {
@@ -31,6 +37,19 @@ public class JwtDecodeService {
         }
 
         return userMapper.toUser(user);
+    }
+
+    public Set<String> getRolesNames(Jwt jwt) {
+        try {
+            Map<String, List<String>> realmAccess = jwt.getClaim("realm_access");
+            if(realmAccess.get("roles") instanceof List<String> list) {
+                return new HashSet<>(list);
+            }else {
+                throw new IllegalArgumentException("Invalid roles format in JWT");
+            }
+        } catch (Exception e) {
+            return Set.of();
+        }
     }
 
     public String getUsername(Jwt jwt) {

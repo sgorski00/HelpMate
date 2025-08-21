@@ -1,4 +1,4 @@
-package pl.sgorski.user_service.config;
+package pl.sgorski.security;
 
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.GrantedAuthority;

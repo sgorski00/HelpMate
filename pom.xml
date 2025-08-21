@@ -21,9 +21,10 @@
 <!--        <module>comment-service</module>-->
 <!--        <module>history-service</module>-->
 <!--        <module>notification-service</module>-->
-<!--        <module>ticket-service</module>-->
+        <module>ticket-service</module>
         <module>user-service</module>
-<!--        <module>common-lib</module>-->
+        <module>common-lib</module>
+        <module>coverage-aggregator</module>
     </modules>
 
     <properties>
@@ -65,6 +66,11 @@
                 <groupId>org.mapstruct</groupId>
                 <artifactId>mapstruct</artifactId>
                 <version>${mapstruct.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>pl.sgorski</groupId>
+                <artifactId>helpmate-common-lib</artifactId>
+                <version>1.0.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

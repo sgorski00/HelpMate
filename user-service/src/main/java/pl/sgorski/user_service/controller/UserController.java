@@ -3,12 +3,10 @@ package pl.sgorski.user_service.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import pl.sgorski.user_service.mapper.UserMapper;
 import pl.sgorski.user_service.model.User;
-import pl.sgorski.user_service.service.JwtDecodeService;
 import pl.sgorski.user_service.service.UserService;
 
 @RestController
@@ -16,14 +14,15 @@ import pl.sgorski.user_service.service.UserService;
 @RequiredArgsConstructor
 public class UserController {
 
+    //TODO: Add users deletion or deactivation
+    //TODO: Add Swagger docs
+
     private final UserService userService;
-    private final JwtDecodeService jwtDecodeService;
     private final UserMapper userMapper;
 
     @GetMapping("/me")
-    public ResponseEntity<?> getLoggedUser(@AuthenticationPrincipal Jwt jwt) {
-        String username = jwtDecodeService.getUsername(jwt);
-        User user = userService.getUserByUsername(username);
+    public ResponseEntity<?> getLoggedUser(Authentication authentication) {
+        User user = userService.getUserById(authentication.getName());
         return ResponseEntity.ok(userMapper.toDto(user));
     }
 

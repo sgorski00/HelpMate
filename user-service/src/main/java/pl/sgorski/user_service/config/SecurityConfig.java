@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import pl.sgorski.security.CustomJwtAuthenticationConverter;
 
 @Log4j2
 @Configuration
@@ -26,6 +27,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/users/me").authenticated()
                         .requestMatchers("/api/users/**").hasRole("ADMIN")
                         .requestMatchers("/api/auth/callback").permitAll()
+                        .requestMatchers("/api/internal/**").hasRole("SERVICE_TICKET")
                         .anyRequest().denyAll()
                 )
                 .oauth2ResourceServer(oauth -> oauth

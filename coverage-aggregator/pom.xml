@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>pl.sgorski</groupId>
+        <artifactId>HelpMate</artifactId>
+        <version>1.0.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>coverage-aggregator</artifactId>
+    <name>coverage-aggregator</name>
+    <description>Test coverage aggregator module</description>
+    <packaging>pom</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>pl.sgorski</groupId>
+            <artifactId>user-service</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>pl.sgorski</groupId>
+            <artifactId>ticket-service</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>pl.sgorski</groupId>
+            <artifactId>helpmate-common-lib</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>report-aggregate</id>
+                        <phase>verify</phase>
+                        <goals><goal>report-aggregate</goal></goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <dataFileIncludes>
+                        <dataFileInclude>**/target/jacoco.exec</dataFileInclude>
+                    </dataFileIncludes>
+                    <outputDirectory>${project.build.directory}/site/jacoco-aggregate</outputDirectory>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>open-report</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <exec executable="cmd">
+                                    <arg line="/c start ${project.build.directory}/site/jacoco-aggregate/index.html"/>
+                                </exec>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

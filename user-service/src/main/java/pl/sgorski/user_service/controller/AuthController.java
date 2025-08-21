@@ -18,6 +18,8 @@ public class AuthController {
 
     @GetMapping("/callback")
     public ResponseEntity<?> handleLogin(@AuthenticationPrincipal Jwt jwt) {
+        //this endpoint should be called after successful login
+        //it will create user if not exists and update roles if they changed
         userService.crateUserIfNotExists(jwt);
         return ResponseEntity.ok(jwt.getTokenValue());
     }

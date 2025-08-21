@@ -1,4 +1,4 @@
-package pl.sgorski.user_service.exception;
+package pl.sgorski.common.exception;
 
 public class UserNotFoundException extends RuntimeException {
 

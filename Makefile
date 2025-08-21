@@ -1,4 +1,5 @@
 up:
+	mvn clean package -DskipTests
 	docker compose up -d
 
 down:
@@ -11,8 +12,9 @@ restart:
 	docker compose restart
 
 restart-app:
-	docker compose down user-service
-	docker compose up --build -d user-service
+	docker compose down user-service ticket-service
+	mvn clean package -DskipTests
+	docker compose up --build -d user-service ticket-service
 
 stop:
 	docker stop $(docker ps -aq)
@@ -25,4 +27,7 @@ backup-keycloak:
 
 psql-user:
 	docker compose exec -it postgres-user psql -U admin -d hm_user_db
+
+psql-ticket:
+	docker compose exec -it postgres-ticket psql -U admin -d hm_ticket_db
 

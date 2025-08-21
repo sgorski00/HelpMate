@@ -7,6 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -15,8 +16,7 @@ import java.sql.Timestamp;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     @Column(nullable = false, unique = true)
     private String username;
@@ -27,6 +27,14 @@ public class User {
     private String firstname;
 
     private String lastname;
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_name", referencedColumnName = "name")
+    )
+    private Set<Role> roles;
 
     @CreationTimestamp
     private Timestamp createdAt;
