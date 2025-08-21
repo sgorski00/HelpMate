@@ -40,18 +40,18 @@ services:
     networks:
       - helpmate_network
 
-  #  rabbitmq:
-  #    image: rabbitmq:3.13.7-management
-  #    container_name: hm-rabbitmq
-  #    restart: unless-stopped
-  #    environment:
-  #      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
-  #      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
-  #    ports:
-  #      - "5672:5672"
-  #      - "15672:15672"
-  #    networks:
-  #        - helpmate_network
+    rabbitmq:
+      image: rabbitmq:3.13.7-management
+      container_name: hm-rabbitmq
+      restart: unless-stopped
+      environment:
+        - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+        - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+      ports:
+        - "5672:5672"
+        - "15672:15672"
+      networks:
+          - helpmate_network
 
   postgres-user:
     image: postgres:17.2
