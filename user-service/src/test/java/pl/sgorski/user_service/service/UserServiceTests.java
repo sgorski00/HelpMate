@@ -13,9 +13,9 @@ import pl.sgorski.user_service.model.User;
 import pl.sgorski.user_service.repository.UserRepository;
 
 import java.util.Optional;
+import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -28,6 +28,9 @@ public class UserServiceTests {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private RoleService roleService;
 
     @Mock
     private Jwt jwt;
@@ -47,13 +50,29 @@ public class UserServiceTests {
     }
 
     @Test
-    void shouldNotCreateUserIfExists() {
+    void shouldNotCreateUserIfExists_RolesNotChanged() {
         when(jwt.getSubject()).thenReturn("test-user-id");
         when(userRepository.findById(anyString())).thenReturn(Optional.of(new User()));
+        when(jwtDecodeService.getRolesNames(any())).thenReturn(Set.of());
+        when(roleService.mapToRoles(any())).thenReturn(Set.of());
+        when(roleService.hasRolesChanged(any(), any())).thenReturn(false);
 
         userService.crateUserIfNotExists(jwt);
 
         verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    void shouldNotCreateUserIfExists_RolesChanged() {
+        when(jwt.getSubject()).thenReturn("test-user-id");
+        when(userRepository.findById(anyString())).thenReturn(Optional.of(new User()));
+        when(jwtDecodeService.getRolesNames(any())).thenReturn(Set.of());
+        when(roleService.mapToRoles(any())).thenReturn(Set.of());
+        when(roleService.hasRolesChanged(any(), any())).thenReturn(true);
+
+        userService.crateUserIfNotExists(jwt);
+
+        verify(userRepository, times(1)).save(any(User.class));
     }
 
     @Test
@@ -86,5 +105,21 @@ public class UserServiceTests {
 
         assertEquals(0, usersPage.getTotalElements());
         verify(userRepository, times(1)).findAll(pageRequest);
+    }
+
+    @Test
+    void shouldFindUserById() {
+        when(userRepository.findById(anyString())).thenReturn(Optional.of(new User()));
+
+        User user = userService.getUserById("test-user-id");
+
+        assertNotNull(user);
+    }
+
+    @Test
+    void shouldNotFindUserById_UserNotFoundException() {
+        when(userRepository.findById(anyString())).thenThrow(new UserNotFoundException("User not found"));
+
+        assertThrows(UserNotFoundException.class, () -> userService.getUserById("test-user-id"));
     }
 }

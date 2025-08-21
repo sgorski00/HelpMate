@@ -11,11 +11,11 @@ public class TicketSecurityService {
     private final TicketService ticketService;
     private final UserClientService userClientService;
 
-    public boolean isTicketCreator(Long ticketId, String sub) {
+    public boolean isTicketCreator(Long ticketId, String userId) {
         var ticket = ticketService.getTicketById(ticketId);
-        var user = userClientService.getUserById(sub).blockOptional().orElseThrow(
-                () -> new UserNotFoundException("User not found with id: " + sub)
+        var user = userClientService.getUserById(userId).blockOptional().orElseThrow(
+                () -> new UserNotFoundException("User not found with id: " + userId)
         );
-        return ticket.getReporterId().equals(user.id());
+        return ticket.getReporterId() != null && ticket.getReporterId().equals(user.id());
     }
 }

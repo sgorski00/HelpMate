@@ -13,6 +13,8 @@ import pl.sgorski.ticket_service.mapper.TicketMapper;
 import pl.sgorski.ticket_service.model.TicketStatus;
 import pl.sgorski.ticket_service.service.TicketService;
 
+import java.security.Principal;
+
 @RestController
 @RequestMapping("/api/tickets")
 @RequiredArgsConstructor
@@ -24,9 +26,9 @@ public class TicketController {
     @PostMapping
     public ResponseEntity<?> createTicket(
             @Valid @RequestBody CreateTicketRequest createTicketRequest,
-            Authentication authentication
+            Principal principal
     ) {
-        var loggedUserId = authentication.getName();
+        var loggedUserId = principal.getName();
         var ticket = ticketService.createTicket(createTicketRequest, loggedUserId);
         return ResponseEntity.status(201).body(ticketMapper.toDto(ticket));
     }

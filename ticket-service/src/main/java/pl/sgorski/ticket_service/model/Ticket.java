@@ -5,7 +5,6 @@ import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import pl.sgorski.common.exception.IllegalStatusChangeException;
-import pl.sgorski.ticket_service.dto.CreateTicketRequest;
 import pl.sgorski.ticket_service.dto.UpdateTicketRequest;
 
 import java.sql.Timestamp;
@@ -44,7 +43,7 @@ public class Ticket {
     @PrePersist
     private void setStatusIfNull() {
         if (status == null) {
-            status = TicketStatus.OPEN;
+            setStatus(TicketStatus.OPEN);
         }
     }
 
@@ -65,6 +64,6 @@ public class Ticket {
     }
 
     private boolean isModifiable() {
-        return this.status.equals(TicketStatus.OPEN) || this.status.equals(TicketStatus.IN_PROGRESS);
+        return this.status == null || this.status.equals(TicketStatus.OPEN) || this.status.equals(TicketStatus.IN_PROGRESS);
     }
 }
