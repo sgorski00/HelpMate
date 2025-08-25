@@ -6,7 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
-import pl.sgorski.ticket_service.config.KeycloakTicketClientProperties;
+import pl.sgorski.ticket_service.config.properties.KeycloakTicketClientProperties;
 
 @Service
 public class KeycloakTokenService {

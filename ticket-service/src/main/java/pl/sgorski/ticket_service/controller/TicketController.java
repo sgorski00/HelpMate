@@ -54,7 +54,7 @@ public class TicketController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('TECHNICIAN') or @ticketSecurity.isTicketCreator(#id, authentication.name)")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TECHNICIAN') or @ticketSecurity.isTicketCreator(#id, authentication.exchangeName)")
     public ResponseEntity<?> updateTicket(
             @PathVariable Long id,
             @Valid @RequestBody UpdateTicketRequest updateTicketRequest
@@ -64,7 +64,7 @@ public class TicketController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('TECHNICIAN') or @ticketSecurity.isTicketCreator(#id, authentication.name)")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TECHNICIAN') or @ticketSecurity.isTicketCreator(#id, authentication.exchangeName)")
     public ResponseEntity<?> getTicketById(@PathVariable Long id) {
         var ticket = ticketService.getTicketById(id);
         return ResponseEntity.ok(ticketMapper.toDto(ticket));

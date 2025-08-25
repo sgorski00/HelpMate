@@ -6,6 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import pl.sgorski.common.event.TicketCreatedEvent;
 import pl.sgorski.common.exception.NotCompatibleRoleException;
 import pl.sgorski.common.exception.UserNotFoundException;
 import pl.sgorski.common.utils.AuthorityUtils;
@@ -23,9 +25,11 @@ import pl.sgorski.ticket_service.repository.TicketRepository;
 public class TicketService {
 
     private final UserClientService userClientService;
+    private final EventService eventService;
     private final TicketRepository ticketRepository;
     private final TicketMapper mapper;
 
+    @Transactional
     public Ticket createTicket(CreateTicketRequest ticket, String reporterId) {
         Ticket newTicket = mapper.toTicket(ticket);
         userClientService.getUserById(reporterId).blockOptional().ifPresentOrElse(
@@ -34,7 +38,10 @@ public class TicketService {
                     throw new UserNotFoundException("User not found with id: " + reporterId);
                 }
         );
-        return ticketRepository.save(newTicket);
+        Ticket savedTicket = ticketRepository.save(newTicket);
+        TicketCreatedEvent event = mapper.toTicketCreatedEvent(savedTicket);
+        eventService.publishTicketCreatedEvent(event);
+        return savedTicket;
     }
 
     public Ticket getTicketById(Long id) {

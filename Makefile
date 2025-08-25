@@ -12,9 +12,24 @@ restart:
 	docker compose restart
 
 restart-app:
-	docker compose down user-service ticket-service
+	docker compose down user-service ticket-service notification-service
 	mvn clean package -DskipTests
-	docker compose up --build -d user-service ticket-service
+	docker compose up --build -d user-service ticket-service notification-service
+
+restart-ticket:
+	docker compose down ticket-service
+	mvn clean package -pl ticket-service -am -DskipTests
+	docker compose up --build -d ticket-service
+
+restart-user:
+	docker compose down user-service
+	mvn clean package -pl user-service -am -DskipTests
+	docker compose up --build -d user-service
+
+restart-notification:
+	docker compose down notification-service
+	mvn clean package -pl notification-service -am -DskipTests
+	docker compose up --build -d notification-service
 
 stop:
 	docker stop $(docker ps -aq)
