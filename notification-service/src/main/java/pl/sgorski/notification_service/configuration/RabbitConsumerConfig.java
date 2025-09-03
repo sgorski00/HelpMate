@@ -36,8 +36,8 @@ public class RabbitConsumerConfig {
     @Bean(name = "ticketCreatedQueue")
     public Queue ticketCreatedQueue() {
         return QueueBuilder.durable(rabbitTicketExchangeProperties.createdQueue())
-                .withArgument("x-dead-letter-exchange", rabbitTicketExchangeProperties.dlx())
-                .withArgument("x-dead-letter-routing-key", rabbitTicketExchangeProperties.createdRoutingKey())
+                .deadLetterExchange(rabbitTicketExchangeProperties.dlx())
+                .deadLetterRoutingKey(rabbitTicketExchangeProperties.createdRoutingKey())
                 .build();
     }
 
@@ -88,7 +88,10 @@ public class RabbitConsumerConfig {
     public RabbitListenerContainerFactory<?> rabbitListenerContainerFactory(SimpleRabbitListenerContainerFactoryConfigurer configurer, ConnectionFactory cf) {
         SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
         configurer.configure(factory, cf);
-        factory.setErrorHandler(eh -> log.error("Messaging error: {}", eh.getCause().getMessage()));
+        factory.setErrorHandler(eh -> {
+            String errMsg = String.format("Messageing error: %s", eh.getCause().getMessage() != null ? eh.getCause().getMessage() : eh.getMessage());
+            log.error(errMsg);
+        });
         return factory;
     }
 }
