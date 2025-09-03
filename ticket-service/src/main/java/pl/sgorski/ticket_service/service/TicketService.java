@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.sgorski.common.exception.NotCompatibleRoleException;
 import pl.sgorski.common.exception.UserNotFoundException;
 import pl.sgorski.common.utils.AuthorityUtils;
@@ -23,9 +24,11 @@ import pl.sgorski.ticket_service.repository.TicketRepository;
 public class TicketService {
 
     private final UserClientService userClientService;
+    private final EventService eventService;
     private final TicketRepository ticketRepository;
     private final TicketMapper mapper;
 
+    @Transactional
     public Ticket createTicket(CreateTicketRequest ticket, String reporterId) {
         Ticket newTicket = mapper.toTicket(ticket);
         userClientService.getUserById(reporterId).blockOptional().ifPresentOrElse(
@@ -34,7 +37,10 @@ public class TicketService {
                     throw new UserNotFoundException("User not found with id: " + reporterId);
                 }
         );
-        return ticketRepository.save(newTicket);
+        Ticket savedTicket = ticketRepository.save(newTicket);
+        eventService.publishTicketCreatedEvent(mapper.toTicketCreatedEvent(savedTicket));
+        if (savedTicket.getAssigneeId() != null) eventService.publishTicketAssignedEvent(mapper.toTicketAssignedEvent(savedTicket));
+        return savedTicket;
     }
 
     public Ticket getTicketById(Long id) {
@@ -52,6 +58,7 @@ public class TicketService {
         return ticketRepository.findAllByReporterId(user.id(), pageable);
     }
 
+    @Transactional
     public Ticket assignTicketById(Long ticketId, String assigneeId) {
         Ticket ticket = getTicketById(ticketId);
         userClientService.getUserById(assigneeId).blockOptional().ifPresentOrElse(
@@ -65,15 +72,19 @@ public class TicketService {
                     throw new UserNotFoundException("User not found with id: " + assigneeId);
                 }
         );
-        return ticketRepository.save(ticket);
+        Ticket savedTicket = ticketRepository.save(ticket);
+        eventService.publishTicketAssignedEvent(mapper.toTicketAssignedEvent(savedTicket));
+        return savedTicket;
     }
 
+    @Transactional
     public Ticket updateTicketById(Long ticketId, UpdateTicketRequest ticketRequest) {
         Ticket existingTicket = getTicketById(ticketId);
         existingTicket.update(ticketRequest);
         return ticketRepository.save(existingTicket);
     }
 
+    @Transactional
     public Ticket changeStatusById(Long ticketId, TicketStatus ticketStatus) {
         Ticket existingTicket = getTicketById(ticketId);
         existingTicket.setStatus(ticketStatus);

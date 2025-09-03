@@ -12,9 +12,24 @@ restart:
 	docker compose restart
 
 restart-app:
-	docker compose down user-service ticket-service
+	docker compose down user-service ticket-service notification-service
 	mvn clean package -DskipTests
-	docker compose up --build -d user-service ticket-service
+	docker compose up --build -d user-service ticket-service notification-service
+
+restart-ticket:
+	docker compose down ticket-service
+	mvn clean package -pl ticket-service -am -DskipTests
+	docker compose up --build -d ticket-service
+
+restart-user:
+	docker compose down user-service
+	mvn clean package -pl user-service -am -DskipTests
+	docker compose up --build -d user-service
+
+restart-notification:
+	docker compose down notification-service
+	mvn clean package -pl notification-service -am -DskipTests
+	docker compose up --build -d notification-service
 
 stop:
 	docker stop $(docker ps -aq)
@@ -30,4 +45,12 @@ psql-user:
 
 psql-ticket:
 	docker compose exec -it postgres-ticket psql -U admin -d hm_ticket_db
+
+psql-notification:
+	docker compose exec -it postgres-notification psql -U admin -d hm_notification_db
+
+rabbitmq-reset:
+	docker compose exec -it rabbitmq rabbitmqctl stop_app
+	docker compose exec -it rabbitmq rabbitmqctl reset
+	docker compose exec -it rabbitmq rabbitmqctl start_app
 
