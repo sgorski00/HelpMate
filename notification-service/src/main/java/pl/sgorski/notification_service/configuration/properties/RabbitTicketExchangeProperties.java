@@ -6,5 +6,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public record RabbitTicketExchangeProperties(
         String exchangeName,
         String createdRoutingKey,
-        String createdQueue
+        String createdQueue,
+        String assignedRoutingKey,
+        String assignedQueue,
+        String dlx,
+        String dlq
 ) { }

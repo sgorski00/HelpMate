@@ -1,20 +1,18 @@
-package pl.sgorski.ticket_service.config;
+package pl.sgorski.notification_service.configuration;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
-import pl.sgorski.ticket_service.config.properties.KeycloakTicketClientProperties;
-import pl.sgorski.ticket_service.config.properties.UserWebClientProperties;
+import pl.sgorski.notification_service.configuration.properties.KeycloakNotificationClientProperties;
+import pl.sgorski.notification_service.configuration.properties.UserWebClientProperties;
 
-import static pl.sgorski.common.utils.UrlUtils.buildUrl;
-
-@Configuration
 @RequiredArgsConstructor
+@Configuration
 public class WebClientConfig {
 
     private final UserWebClientProperties userWebClientProperties;
-    private final KeycloakTicketClientProperties keycloakTicketClientProperties;
+    private final KeycloakNotificationClientProperties keycloakNotificationClientProperties;
 
     @Bean(name = "userServiceWebClient")
     public WebClient userServiceWebClient() {
@@ -27,9 +25,13 @@ public class WebClientConfig {
 
     @Bean(name = "keycloakWebClient")
     public WebClient keycloakWebClient() {
-        String tokenUri = keycloakTicketClientProperties.tokenUri();
+        String tokenUri = keycloakNotificationClientProperties.tokenUri();
         return WebClient.builder()
                 .baseUrl(tokenUri)
                 .build();
+    }
+
+    private String buildUrl(String url, String port) {
+        return port != null ? url + ":" + port : url;
     }
 }

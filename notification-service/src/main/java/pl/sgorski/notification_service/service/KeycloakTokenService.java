@@ -1,4 +1,4 @@
-package pl.sgorski.ticket_service.service;
+package pl.sgorski.notification_service.service;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -6,25 +6,25 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
-import pl.sgorski.ticket_service.config.properties.KeycloakTicketClientProperties;
+import pl.sgorski.notification_service.configuration.properties.KeycloakNotificationClientProperties;
 
 @Service
 public class KeycloakTokenService {
 
     private final WebClient keycloakWebClient;
-    private final KeycloakTicketClientProperties keycloakUserClientProperties;
+    private final KeycloakNotificationClientProperties keycloakNotificationClientProperties;
 
-    public KeycloakTokenService(@Qualifier("keycloakWebClient") WebClient keycloakWebClient, KeycloakTicketClientProperties keycloakUserClientProperties) {
+    public KeycloakTokenService(@Qualifier("keycloakWebClient") WebClient keycloakWebClient, KeycloakNotificationClientProperties keycloakNotificationClientProperties) {
         this.keycloakWebClient = keycloakWebClient;
-        this.keycloakUserClientProperties = keycloakUserClientProperties;
+        this.keycloakNotificationClientProperties = keycloakNotificationClientProperties;
     }
 
     public String getServiceToken() {
         return keycloakWebClient.post()
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(BodyInserters.fromFormData("grant_type", "client_credentials")
-                        .with("client_id", keycloakUserClientProperties.id())
-                        .with("client_secret", keycloakUserClientProperties.secret()))
+                        .with("client_id", keycloakNotificationClientProperties.id())
+                        .with("client_secret", keycloakNotificationClientProperties.secret()))
                 .retrieve()
                 .bodyToMono(TokenResponse.class)
                 .map(TokenResponse::accessToken)

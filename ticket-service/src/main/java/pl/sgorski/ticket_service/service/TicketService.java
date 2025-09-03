@@ -7,7 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.sgorski.common.event.TicketCreatedEvent;
 import pl.sgorski.common.exception.NotCompatibleRoleException;
 import pl.sgorski.common.exception.UserNotFoundException;
 import pl.sgorski.common.utils.AuthorityUtils;
@@ -39,8 +38,8 @@ public class TicketService {
                 }
         );
         Ticket savedTicket = ticketRepository.save(newTicket);
-        TicketCreatedEvent event = mapper.toTicketCreatedEvent(savedTicket);
-        eventService.publishTicketCreatedEvent(event);
+        eventService.publishTicketCreatedEvent(mapper.toTicketCreatedEvent(savedTicket));
+        if (savedTicket.getAssigneeId() != null) eventService.publishTicketAssignedEvent(mapper.toTicketAssignedEvent(savedTicket));
         return savedTicket;
     }
 
@@ -59,6 +58,7 @@ public class TicketService {
         return ticketRepository.findAllByReporterId(user.id(), pageable);
     }
 
+    @Transactional
     public Ticket assignTicketById(Long ticketId, String assigneeId) {
         Ticket ticket = getTicketById(ticketId);
         userClientService.getUserById(assigneeId).blockOptional().ifPresentOrElse(
@@ -72,15 +72,19 @@ public class TicketService {
                     throw new UserNotFoundException("User not found with id: " + assigneeId);
                 }
         );
-        return ticketRepository.save(ticket);
+        Ticket savedTicket = ticketRepository.save(ticket);
+        eventService.publishTicketAssignedEvent(mapper.toTicketAssignedEvent(savedTicket));
+        return savedTicket;
     }
 
+    @Transactional
     public Ticket updateTicketById(Long ticketId, UpdateTicketRequest ticketRequest) {
         Ticket existingTicket = getTicketById(ticketId);
         existingTicket.update(ticketRequest);
         return ticketRepository.save(existingTicket);
     }
 
+    @Transactional
     public Ticket changeStatusById(Long ticketId, TicketStatus ticketStatus) {
         Ticket existingTicket = getTicketById(ticketId);
         existingTicket.setStatus(ticketStatus);

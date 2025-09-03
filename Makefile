@@ -46,3 +46,11 @@ psql-user:
 psql-ticket:
 	docker compose exec -it postgres-ticket psql -U admin -d hm_ticket_db
 
+psql-notification:
+	docker compose exec -it postgres-notification psql -U admin -d hm_notification_db
+
+rabbitmq-reset:
+	docker compose exec -it rabbitmq rabbitmqctl stop_app
+	docker compose exec -it rabbitmq rabbitmqctl reset
+	docker compose exec -it rabbitmq rabbitmqctl start_app
+
