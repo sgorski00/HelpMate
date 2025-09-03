@@ -9,11 +9,15 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>ticket-service</artifactId>
-	<name>ticket-service</name>
-	<description>Ticket service for HelpMate</description>
+	<artifactId>comment-service</artifactId>
+	<name>comment-service</name>
+	<description>Comment service for HelpMate</description>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-amqp</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -35,24 +39,16 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.flywaydb</groupId>
 			<artifactId>flyway-core</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.flywaydb</groupId>
 			<artifactId>flyway-database-postgresql</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.mapstruct</groupId>
-			<artifactId>mapstruct</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-webflux</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-amqp</artifactId>
 		</dependency>
 
 		<dependency>
@@ -106,7 +102,7 @@
 				<groupId>org.flywaydb</groupId>
 				<artifactId>flyway-maven-plugin</artifactId>
 				<configuration>
-					<url>jdbc:postgresql://hm-psql-ticket:5432/${env.POSTGRES_TICKET_DB}</url>
+					<url>jdbc:postgresql://hm-psql-comment:5432/${env.POSTGRES_COMMENT_DB}</url>
 					<user>${env.POSTGRES_USER}</user>
 					<password>${env.POSTGRES_PASSWORD}</password>
 					<cleanDisabled>false</cleanDisabled>
