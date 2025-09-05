@@ -18,6 +18,8 @@ import pl.sgorski.ticket_service.model.Ticket;
 import pl.sgorski.ticket_service.model.TicketStatus;
 import pl.sgorski.ticket_service.repository.TicketRepository;
 
+import java.util.UUID;
+
 @Log4j2
 @Service
 @RequiredArgsConstructor
@@ -29,7 +31,7 @@ public class TicketService {
     private final TicketMapper mapper;
 
     @Transactional
-    public Ticket createTicket(CreateTicketRequest ticket, String reporterId) {
+    public Ticket createTicket(CreateTicketRequest ticket, UUID reporterId) {
         Ticket newTicket = mapper.toTicket(ticket);
         userClientService.getUserById(reporterId).blockOptional().ifPresentOrElse(
                 u -> newTicket.setReporterId(u.id()),
@@ -53,13 +55,14 @@ public class TicketService {
             return ticketRepository.findAll(pageable);
         }
 
-        var user = userClientService.getUserById(authentication.getName()).blockOptional()
+        UUID userId = UUID.fromString(authentication.getName());
+        var user = userClientService.getUserById(userId).blockOptional()
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + authentication.getName()));
         return ticketRepository.findAllByReporterId(user.id(), pageable);
     }
 
     @Transactional
-    public Ticket assignTicketById(Long ticketId, String assigneeId) {
+    public Ticket assignTicketById(Long ticketId, UUID assigneeId) {
         Ticket ticket = getTicketById(ticketId);
         userClientService.getUserById(assigneeId).blockOptional().ifPresentOrElse(
                 u -> {

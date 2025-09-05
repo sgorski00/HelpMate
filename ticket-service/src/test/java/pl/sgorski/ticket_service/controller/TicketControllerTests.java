@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -23,11 +22,11 @@ import pl.sgorski.ticket_service.service.TicketService;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -54,8 +53,8 @@ public class TicketControllerTests {
                 "Test Ticket",
                 "This is a test ticket.",
                 "Opened",
-                "user123",
-                "2023-10-01T12:00:00Z",
+                UUID.randomUUID(),
+                UUID.randomUUID(),
                 Timestamp.from(Instant.now()),
                 Timestamp.from(Instant.now())
         );
@@ -119,7 +118,7 @@ public class TicketControllerTests {
                     assertTrue(result.getResponse().getContentAsString().contains("This is a test ticket."));
                 });
 
-        verify(ticketService, times(1)).assignTicketById(1L, "techId");
+        verify(ticketService, times(1)).assignTicketById(anyLong(), any(UUID.class));
     }
 
     @Test
@@ -131,7 +130,7 @@ public class TicketControllerTests {
                         .param("assignee", "techId"))
                 .andExpect(status().isNotFound())
                 .andExpect(result -> assertTrue(result.getResponse().getContentAsString().contains("Ticket not found")));
-        verify(ticketService, times(1)).assignTicketById(1L, "techId");
+        verify(ticketService, times(1)).assignTicketById(anyLong(), any(UUID.class));
     }
 
     @Test
@@ -143,7 +142,7 @@ public class TicketControllerTests {
                         .param("assignee", "notTechId"))
                 .andExpect(status().isConflict())
                 .andExpect(result -> assertTrue(result.getResponse().getContentAsString().contains("User's role is not sufficient")));
-        verify(ticketService, times(1)).assignTicketById(1L, "notTechId");
+        verify(ticketService, times(1)).assignTicketById(anyLong(), any(UUID.class));
     }
 
     @Test

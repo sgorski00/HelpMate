@@ -40,8 +40,7 @@ public class TicketEventListener {
             @Header("eventType") String eventType
     ) {
         log.info("Received ticket created message: id={}, payload={}", eventId, payload);
-        Runnable mailTask = () -> mailService.sendTicketCreatedEmail(payload.reporterId(), payload);
-        notificationProcessor.process(eventId, eventType, payload.reporterId(), mailTask);
+        notificationProcessor.processTicketCreatedEvent(eventId, eventType, payload);
     }
 
     @RabbitListener(queues = "#{ticketAssignedQueue.name}")
@@ -51,7 +50,6 @@ public class TicketEventListener {
             @Header("eventType") String eventType
     ) {
         log.info("Received ticket assigned message: id={}, payload={}", eventId, payload);
-        Runnable mailTask = () -> mailService.sendTicketAssignedEmail(payload.assigneeId(), payload);
-        notificationProcessor.process(eventId, eventType, payload.assigneeId(), mailTask);
+        notificationProcessor.processTicketAssignedEvent(eventId, eventType, payload);
     }
 }

@@ -49,6 +49,16 @@ public class GlobalExceptionHandler {
         return problemDetail;
     }
 
+    @ExceptionHandler(CommentNotFoundException.class)
+    public ProblemDetail handleCommentNotFoundException(CommentNotFoundException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatusCode.valueOf(404),
+                "Comment not found: " + ex.getMessage()
+        );
+        problemDetail.setTitle("Comment Not Found");
+        return problemDetail;
+    }
+
     @ExceptionHandler(JwtException.class)
     public ProblemDetail handleJwtException(JwtException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(

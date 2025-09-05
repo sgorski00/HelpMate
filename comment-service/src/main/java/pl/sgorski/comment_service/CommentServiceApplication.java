@@ -3,20 +3,20 @@ package pl.sgorski.comment_service;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import pl.sgorski.comment_service.config.properties.KeycloakCommentClientProperties;
+import pl.sgorski.comment_service.config.properties.UserWebClientProperties;
 
 @Log4j2
-@SpringBootApplication
-@EnableScheduling
+@SpringBootApplication(scanBasePackages = {
+		"pl.sgorski.comment_service",
+		"pl.sgorski.common",
+		"pl.sgorski.security"}
+)
+@EnableConfigurationProperties({KeycloakCommentClientProperties.class, UserWebClientProperties.class})
 public class CommentServiceApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(CommentServiceApplication.class, args);
-	}
-
-	@Scheduled(cron = "0 * * * * *")
-	public void scheduledTasks() {
-		log.info("Comment service is still running...");
 	}
 }

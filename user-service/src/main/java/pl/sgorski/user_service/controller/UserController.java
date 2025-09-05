@@ -9,6 +9,8 @@ import pl.sgorski.user_service.mapper.UserMapper;
 import pl.sgorski.user_service.model.User;
 import pl.sgorski.user_service.service.UserService;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
@@ -22,7 +24,7 @@ public class UserController {
 
     @GetMapping("/me")
     public ResponseEntity<?> getLoggedUser(Authentication authentication) {
-        User user = userService.getUserById(authentication.getName());
+        User user = userService.getUserById(UUID.fromString(authentication.getName()));
         return ResponseEntity.ok(userMapper.toDto(user));
     }
 

@@ -14,6 +14,7 @@ import pl.sgorski.user_service.repository.UserRepository;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -41,7 +42,7 @@ public class UserServiceTests {
     @Test
     void shouldCreateUserIfNotExists() {
         when(jwt.getSubject()).thenReturn("test-user-id");
-        when(userRepository.findById(anyString())).thenReturn(Optional.empty());
+        when(userRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
         when(jwtDecodeService.getUser(any())).thenReturn(new User());
 
         userService.crateUserIfNotExists(jwt);
@@ -52,7 +53,7 @@ public class UserServiceTests {
     @Test
     void shouldNotCreateUserIfExists_RolesNotChanged() {
         when(jwt.getSubject()).thenReturn("test-user-id");
-        when(userRepository.findById(anyString())).thenReturn(Optional.of(new User()));
+        when(userRepository.findById(any(UUID.class))).thenReturn(Optional.of(new User()));
         when(jwtDecodeService.getRolesNames(any())).thenReturn(Set.of());
         when(roleService.mapToRoles(any())).thenReturn(Set.of());
         when(roleService.hasRolesChanged(any(), any())).thenReturn(false);
@@ -65,7 +66,7 @@ public class UserServiceTests {
     @Test
     void shouldNotCreateUserIfExists_RolesChanged() {
         when(jwt.getSubject()).thenReturn("test-user-id");
-        when(userRepository.findById(anyString())).thenReturn(Optional.of(new User()));
+        when(userRepository.findById(any(UUID.class))).thenReturn(Optional.of(new User()));
         when(jwtDecodeService.getRolesNames(any())).thenReturn(Set.of());
         when(roleService.mapToRoles(any())).thenReturn(Set.of());
         when(roleService.hasRolesChanged(any(), any())).thenReturn(true);
@@ -109,17 +110,17 @@ public class UserServiceTests {
 
     @Test
     void shouldFindUserById() {
-        when(userRepository.findById(anyString())).thenReturn(Optional.of(new User()));
+        when(userRepository.findById(any(UUID.class))).thenReturn(Optional.of(new User()));
 
-        User user = userService.getUserById("test-user-id");
+        User user = userService.getUserById(UUID.randomUUID());
 
         assertNotNull(user);
     }
 
     @Test
     void shouldNotFindUserById_UserNotFoundException() {
-        when(userRepository.findById(anyString())).thenThrow(new UserNotFoundException("User not found"));
+        when(userRepository.findById(any(UUID.class))).thenThrow(new UserNotFoundException("User not found"));
 
-        assertThrows(UserNotFoundException.class, () -> userService.getUserById("test-user-id"));
+        assertThrows(UserNotFoundException.class, () -> userService.getUserById(UUID.randomUUID()));
     }
 }

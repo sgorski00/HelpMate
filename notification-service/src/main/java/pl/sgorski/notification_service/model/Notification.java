@@ -21,7 +21,7 @@ public class Notification {
 
     private String eventType;
 
-    private String recipientId;
+    private UUID recipientId;
 
     private NotificationChannel channel;
 

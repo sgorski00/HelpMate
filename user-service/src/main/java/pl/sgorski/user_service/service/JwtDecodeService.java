@@ -9,10 +9,7 @@ import pl.sgorski.common.dto.UserDto;
 import pl.sgorski.user_service.mapper.UserMapper;
 import pl.sgorski.user_service.model.User;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +20,7 @@ public class JwtDecodeService {
 
     public User getUser(Jwt jwt) {
         UserDto user = new UserDto(
-                jwt.getSubject(),
+                UUID.fromString(jwt.getSubject()),
                 getUsername(jwt),
                 getEmail(jwt),
                 getFirstName(jwt),

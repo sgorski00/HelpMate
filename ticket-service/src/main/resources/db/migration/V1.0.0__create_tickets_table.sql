@@ -3,8 +3,8 @@ CREATE TABLE IF NOT EXISTS tickets (
     title VARCHAR(255) NOT NULL,
     description TEXT NOT NULL,
     status VARCHAR(32) NOT NULL DEFAULT 'OPEN',
-    reporter_id BIGSERIAL NOT NULL,
-    assignee_id BIGSERIAL,
+    reporter_id UUID NOT NULL,
+    assignee_id UUID,
     created_at TIMESTAMP WITHOUT TIME ZONE,
     updated_at TIMESTAMP WITHOUT TIME ZONE
 );

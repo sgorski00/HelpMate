@@ -12,7 +12,7 @@ import pl.sgorski.user_service.model.User;
 import pl.sgorski.user_service.repository.UserRepository;
 
 import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.UUID;
 
 @Log4j2
 @Service
@@ -24,7 +24,7 @@ public class UserService {
     private final RoleService roleService;
 
     public void crateUserIfNotExists(Jwt jwt) {
-        userRepository.findById(jwt.getSubject())
+        userRepository.findById(UUID.fromString(jwt.getSubject()))
                 .ifPresentOrElse(u -> {
                     log.debug("User already exists: {}, checking for new roles", u.getUsername());
                     Set<Role> rolesFromJwt = roleService.mapToRoles(jwtDecodeService.getRolesNames(jwt));
@@ -53,7 +53,7 @@ public class UserService {
         return userRepository.findAll(pageRequest);
     }
 
-    public User getUserById(String id) {
+    public User getUserById(UUID id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User with id: " + id + " not found"));
     }

@@ -22,10 +22,10 @@ import pl.sgorski.user_service.service.UserService;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -53,7 +53,7 @@ public class UserControllerTests {
     @BeforeEach
     void setUp() {
         userDto = new UserDto(
-                "test123-456",
+                UUID.randomUUID(),
                 "testuser",
                 "test@user.com",
                 "John",
@@ -65,14 +65,13 @@ public class UserControllerTests {
     @Test
     @WithMockUser
     void shouldReturnLoggedUser() throws Exception {
-        when(userService.getUserById(anyString())).thenReturn(new User());
+        when(userService.getUserById(any(UUID.class))).thenReturn(new User());
         when(userMapper.toDto(any(User.class))).thenReturn(userDto);
 
         mockMvc.perform(get("/api/users/me"))
                 .andExpect(status().isOk())
                 .andExpect(result -> {
                     String responseBody = result.getResponse().getContentAsString();
-                    assertThat(responseBody).contains("1");
                     assertThat(responseBody).contains("testuser");
                     assertThat(responseBody).contains("test@user.com");
                     assertThat(responseBody).contains("John");
@@ -96,7 +95,6 @@ public class UserControllerTests {
                 .andExpect(status().isOk())
                 .andExpect(result -> {
                     String responseBody = result.getResponse().getContentAsString();
-                    assertThat(responseBody).contains("1");
                     assertThat(responseBody).contains("testuser");
                     assertThat(responseBody).contains("test@user.com");
                     assertThat(responseBody).contains("John");
@@ -140,7 +138,6 @@ public class UserControllerTests {
                 .andExpect(status().isOk())
                 .andExpect(result -> {
                     String responseBody = result.getResponse().getContentAsString();
-                    assertThat(responseBody).contains("1");
                     assertThat(responseBody).contains("testuser");
                     assertThat(responseBody).contains("test@user.com");
                     assertThat(responseBody).contains("John");

@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS roles (
 );
 
 CREATE TABLE IF NOT EXISTS user_roles (
-    user_id VARCHAR(36),
+    user_id UUID,
     role_name VARCHAR(255),
     PRIMARY KEY(user_id, role_name),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,

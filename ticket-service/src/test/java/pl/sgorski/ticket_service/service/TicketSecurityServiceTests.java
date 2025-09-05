@@ -12,10 +12,10 @@ import pl.sgorski.ticket_service.model.Ticket;
 import reactor.core.publisher.Mono;
 
 import java.util.Set;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,7 +32,7 @@ public class TicketSecurityServiceTests {
 
     @Test
     void shouldReturnTrue_TicketCreator() {
-        String creatorSub = "user_sub";
+        UUID creatorSub = UUID.randomUUID();
         Ticket ticket = new Ticket();
         ticket.setReporterId(creatorSub);
         UserDto user = new UserDto(
@@ -43,7 +43,7 @@ public class TicketSecurityServiceTests {
                 "test",
                 Set.of()
         );
-        when(userClientService.getUserById(anyString())).thenReturn(Mono.just(user));
+        when(userClientService.getUserById(any(UUID.class))).thenReturn(Mono.just(user));
         when(ticketService.getTicketById(anyLong())).thenReturn(ticket);
 
         boolean res = ticketSecurityService.isTicketCreator(1L, creatorSub);
@@ -53,8 +53,8 @@ public class TicketSecurityServiceTests {
 
     @Test
     void shouldReturnFalse_NotTicketCreator() {
-        String creatorSub = "user_sub";
-        String otherSub = "other_sub";
+        UUID creatorSub = UUID.randomUUID();
+        UUID otherSub = UUID.randomUUID();
         Ticket ticket = new Ticket();
         ticket.setReporterId(creatorSub);
         UserDto user = new UserDto(
@@ -65,7 +65,7 @@ public class TicketSecurityServiceTests {
                 "test",
                 Set.of()
         );
-        when(userClientService.getUserById(anyString())).thenReturn(Mono.just(user));
+        when(userClientService.getUserById(any(UUID.class))).thenReturn(Mono.just(user));
         when(ticketService.getTicketById(anyLong())).thenReturn(ticket);
 
         boolean res = ticketSecurityService.isTicketCreator(1L, otherSub);
@@ -75,7 +75,7 @@ public class TicketSecurityServiceTests {
 
     @Test
     void shouldReturnFalse_TicketReporterIdNotSet() {
-        String creatorSub = "user_sub";
+        UUID creatorSub = UUID.randomUUID();
         Ticket ticket = new Ticket();
         ticket.setReporterId(null);
         UserDto user = new UserDto(
@@ -86,7 +86,7 @@ public class TicketSecurityServiceTests {
                 "test",
                 Set.of()
         );
-        when(userClientService.getUserById(anyString())).thenReturn(Mono.just(user));
+        when(userClientService.getUserById(any(UUID.class))).thenReturn(Mono.just(user));
         when(ticketService.getTicketById(anyLong())).thenReturn(ticket);
 
         boolean res = ticketSecurityService.isTicketCreator(1L, creatorSub);
@@ -98,17 +98,17 @@ public class TicketSecurityServiceTests {
     void shouldThrow_TicketNotFound() {
         when(ticketService.getTicketById(anyLong())).thenThrow(new TicketNotFoundException("Ticket not found"));
 
-        assertThrows(TicketNotFoundException.class, () -> ticketSecurityService.isTicketCreator(1L, "creator_sub"));
+        assertThrows(TicketNotFoundException.class, () -> ticketSecurityService.isTicketCreator(1L, UUID.randomUUID()));
     }
 
     @Test
     void shouldThrow_UserNotFound() {
-        String creatorSub = "user_sub";
-        String otherSub = "other_sub";
+        UUID creatorSub = UUID.randomUUID();
+        UUID otherSub = UUID.randomUUID();
         Ticket ticket = new Ticket();
         ticket.setReporterId(creatorSub);
         when(ticketService.getTicketById(anyLong())).thenReturn(ticket);
-        when(userClientService.getUserById(anyString())).thenReturn(Mono.empty());
+        when(userClientService.getUserById(any(UUID.class))).thenReturn(Mono.empty());
 
         assertThrows(UserNotFoundException.class, () -> ticketSecurityService.isTicketCreator(1L, otherSub));
     }
