@@ -22,12 +22,12 @@ public class CommentController {
     private final CommentMapper commentMapper;
 
     @PostMapping("/{ticketId}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TECHNICIAN') or @commentSecurity.isTicketCreator(#ticketId, authentication.name)")
     public ResponseEntity<?> addComment(
             @PathVariable Long ticketId,
             @RequestBody @Valid CreateCommentRequest createCommentRequest,
             Principal principal
     ) {
-        //TODO: should not allow not ticket creator to add comments - only admin, technician and ticket creator
         //TODO: should send notification to the reporter when comment is added by someone else
         UUID authorId = UUID.fromString(principal.getName());
         Comment comment = commentMapper.toComment(createCommentRequest, ticketId, authorId);

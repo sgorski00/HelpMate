@@ -93,4 +93,8 @@ public class TicketService {
         existingTicket.setStatus(ticketStatus);
         return ticketRepository.save(existingTicket);
     }
+
+    public Boolean isTicketCreator(Long ticketId, UUID userId) {
+        return getTicketById(ticketId).getReporterId().equals(userId);
+    }
 }

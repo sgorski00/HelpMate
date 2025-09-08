@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
 import pl.sgorski.comment_service.config.properties.KeycloakCommentClientProperties;
+import pl.sgorski.comment_service.config.properties.TicketWebClientProperties;
 import pl.sgorski.comment_service.config.properties.UserWebClientProperties;
 
 import static pl.sgorski.common.utils.UrlUtils.buildUrl;
@@ -16,12 +17,22 @@ import static pl.sgorski.common.utils.UrlUtils.buildUrl;
 public class WebClientConfig {
 
     private final UserWebClientProperties userWebClientProperties;
+    private final TicketWebClientProperties ticketServiceWebClient;
     private final KeycloakCommentClientProperties keycloakCommentClientProperties;
 
     @Bean(name = "userServiceWebClient")
     public WebClient userServiceWebClient() {
         String url = userWebClientProperties.baseUrl();
         String port = userWebClientProperties.port();
+        return WebClient.builder()
+                .baseUrl(buildUrl(url, port))
+                .build();
+    }
+
+    @Bean(name = "ticketServiceWebClient")
+    public WebClient ticketServiceWebClient() {
+        String url = ticketServiceWebClient.baseUrl();
+        String port = ticketServiceWebClient.port();
         return WebClient.builder()
                 .baseUrl(buildUrl(url, port))
                 .build();

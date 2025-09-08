@@ -13,7 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import pl.sgorski.common.exception.NotCompatibleRoleException;
 import pl.sgorski.common.exception.TicketNotFoundException;
 import pl.sgorski.common.exception.UserNotFoundException;
-import pl.sgorski.ticket_service.dto.TicketEntityResponse;
+import pl.sgorski.common.dto.TicketDto;
 import pl.sgorski.ticket_service.mapper.TicketMapper;
 import pl.sgorski.ticket_service.model.Ticket;
 import pl.sgorski.ticket_service.model.TicketStatus;
@@ -44,11 +44,11 @@ public class TicketControllerTests {
     @MockitoBean
     private TicketMapper ticketMapper;
 
-    private TicketEntityResponse responseDto;
+    private TicketDto responseDto;
 
     @BeforeEach
     void setUp() {
-        responseDto = new TicketEntityResponse(
+        responseDto = new TicketDto(
                 1L,
                 "Test Ticket",
                 "This is a test ticket.",
