@@ -12,6 +12,7 @@ import org.springframework.boot.autoconfigure.amqp.SimpleRabbitListenerContainer
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import pl.sgorski.notification_service.configuration.properties.RabbitCommentExchangeProperties;
 import pl.sgorski.notification_service.configuration.properties.RabbitTicketExchangeProperties;
 
 @Log4j2
@@ -22,6 +23,7 @@ import pl.sgorski.notification_service.configuration.properties.RabbitTicketExch
 public class RabbitConsumerConfig {
 
     private final RabbitTicketExchangeProperties rabbitTicketExchangeProperties;
+    private final RabbitCommentExchangeProperties rabbitCommentExchangeProperties;
 
     @Bean
     public TopicExchange ticketExchange() {
@@ -29,8 +31,18 @@ public class RabbitConsumerConfig {
     }
 
     @Bean
+    public TopicExchange commentExchange() {
+        return new TopicExchange(rabbitCommentExchangeProperties.exchangeName(), true, false);
+    }
+
+    @Bean
     public TopicExchange ticketDlx() {
         return new TopicExchange(rabbitTicketExchangeProperties.dlx(), true, false);
+    }
+
+    @Bean
+    public TopicExchange commentDlx() {
+        return new TopicExchange(rabbitCommentExchangeProperties.dlx(), true, false);
     }
 
     @Bean(name = "ticketCreatedQueue")
@@ -65,7 +77,7 @@ public class RabbitConsumerConfig {
                 .with(rabbitTicketExchangeProperties.assignedRoutingKey());
     }
 
-    @Bean(name = "deadLetterQueue")
+    @Bean(name = "ticketsDlq")
     public Queue ticketsDlq() {
         return QueueBuilder.durable(rabbitTicketExchangeProperties.dlq())
                 .build();
@@ -76,6 +88,36 @@ public class RabbitConsumerConfig {
         return BindingBuilder
                 .bind(ticketsDlq())
                 .to(ticketDlx())
+                .with("#");
+    }
+
+    @Bean(name = "commentCreatedQueue")
+    public Queue commentCreatedQueue() {
+        return QueueBuilder.durable(rabbitCommentExchangeProperties.createdQueue())
+                .deadLetterExchange(rabbitCommentExchangeProperties.dlx())
+                .deadLetterRoutingKey(rabbitCommentExchangeProperties.createdRoutingKey())
+                .build();
+    }
+
+    @Bean
+    public Binding commentCreatedBinding() {
+        return BindingBuilder
+                .bind(commentCreatedQueue())
+                .to(commentExchange())
+                .with(rabbitCommentExchangeProperties.createdRoutingKey());
+    }
+
+    @Bean(name = "commentsDlq")
+    public Queue commentsDlq() {
+        return QueueBuilder.durable(rabbitCommentExchangeProperties.dlq())
+                .build();
+    }
+
+    @Bean
+    public Binding commentsDlqBinding() {
+        return BindingBuilder
+                .bind(commentsDlq())
+                .to(commentDlx())
                 .with("#");
     }
 

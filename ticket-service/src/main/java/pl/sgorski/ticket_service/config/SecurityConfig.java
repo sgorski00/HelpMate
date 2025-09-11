@@ -25,7 +25,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/tickets/**").authenticated()
-                        .requestMatchers(("/api/internal/**")).hasRole("SERVICE_COMMENT")
+                        .requestMatchers(("/api/internal/**")).hasAnyRole("SERVICE_COMMENT", "SERVICE_NOTIFICATION")
                         .anyRequest().denyAll())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -20,10 +20,12 @@ public class UserClientService {
     }
 
     public Mono<UserDto> getUserById(UUID userId) {
-        return userServiceWebClient.get()
-                .uri("/api/internal/users/{id}", userId)
-                .header("Authorization", "Bearer " + keycloakTokenService.getServiceToken())
-                .retrieve()
-                .bodyToMono(UserDto.class);
+        return keycloakTokenService.getServiceToken()
+                .flatMap(token -> userServiceWebClient.get()
+                        .uri("/api/internal/users/{id}", userId)
+                        .header("Authorization", "Bearer " + token)
+                        .retrieve()
+                        .bodyToMono(UserDto.class)
+                );
     }
 }

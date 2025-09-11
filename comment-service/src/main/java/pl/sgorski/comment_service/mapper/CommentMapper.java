@@ -4,6 +4,7 @@ import org.mapstruct.Mapper;
 import pl.sgorski.comment_service.dto.CommentResponse;
 import pl.sgorski.comment_service.dto.CreateCommentRequest;
 import pl.sgorski.comment_service.model.Comment;
+import pl.sgorski.common.event.CommentCreatedEvent;
 
 import java.util.UUID;
 
@@ -13,4 +14,6 @@ public interface CommentMapper {
     Comment toComment(CreateCommentRequest createCommentRequest, Long ticketId, UUID authorId);
 
     CommentResponse toResponse(Comment comment);
+
+    CommentCreatedEvent toCreatedEvent(Comment comment);
 }

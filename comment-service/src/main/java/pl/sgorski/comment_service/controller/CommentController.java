@@ -28,7 +28,6 @@ public class CommentController {
             @RequestBody @Valid CreateCommentRequest createCommentRequest,
             Principal principal
     ) {
-        //TODO: should send notification to the reporter when comment is added by someone else
         UUID authorId = UUID.fromString(principal.getName());
         Comment comment = commentMapper.toComment(createCommentRequest, ticketId, authorId);
         return ResponseEntity.status(201)

@@ -65,7 +65,7 @@ public class TicketController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('TECHNICIAN') or @ticketSecurity.isTicketCreator(#id, authentication.exchangeName)")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TECHNICIAN') or @ticketSecurity.isTicketCreator(#id, authentication.name)")
     public ResponseEntity<?> getTicketById(@PathVariable Long id) {
         var ticket = ticketService.getTicketById(id);
         return ResponseEntity.ok(ticketMapper.toDto(ticket));
