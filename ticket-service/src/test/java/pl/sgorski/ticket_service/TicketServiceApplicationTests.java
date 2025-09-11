@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-@Disabled
+@Disabled("Disabled until proper test database is set up")
 class TicketServiceApplicationTests {
 
 	@Test
