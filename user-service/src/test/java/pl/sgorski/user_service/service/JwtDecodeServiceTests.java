@@ -14,6 +14,7 @@ import pl.sgorski.user_service.model.User;
 
 
 import java.util.Set;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -36,12 +37,14 @@ public class JwtDecodeServiceTests {
     private JwtDecodeService jwtDecodeService;
 
     @Test
-    void shouldMapToUser() {
+    void shouldMapToUserFromJwt() {
         String username = "testuser";
         String email = "testuser@gmail.com";
         String firstName = "John";
         String lastName = "Doe";
+        String userId = UUID.randomUUID().toString();
 
+        when(jwt.getSubject()).thenReturn(userId);
         when(validator.validate(any())).thenReturn(Set.of());
         when(userMapper.toUser(any())).thenReturn(new User(username, email, firstName, lastName));
 
@@ -57,6 +60,7 @@ public class JwtDecodeServiceTests {
     void shouldThrowIfNotValidData() {
         //noinspection unchecked
         ConstraintViolation<UserDto> violation = mock(ConstraintViolation.class);
+        when(jwt.getSubject()).thenReturn(UUID.randomUUID().toString());
         when(validator.validate(any(UserDto.class))).thenReturn(Set.of(violation));
 
         assertThrows(IllegalArgumentException.class, () -> jwtDecodeService.getUser(jwt));
