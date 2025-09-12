@@ -67,4 +67,8 @@ public class Ticket {
     private boolean isModifiable() {
         return this.status == null || this.status.equals(TicketStatus.OPEN) || this.status.equals(TicketStatus.IN_PROGRESS);
     }
+
+    public boolean isCreator(UUID userId) {
+        return this.reporterId.equals(userId);
+    }
 }

@@ -95,6 +95,6 @@ public class TicketService {
     }
 
     public Boolean isTicketCreator(Long ticketId, UUID userId) {
-        return getTicketById(ticketId).getReporterId().equals(userId);
+        return getTicketById(ticketId).isCreator(userId);
     }
 }

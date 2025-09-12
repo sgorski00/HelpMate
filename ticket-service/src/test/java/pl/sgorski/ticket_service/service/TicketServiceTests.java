@@ -12,6 +12,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import pl.sgorski.common.dto.UserDto;
+import pl.sgorski.common.event.TicketAssignedEvent;
+import pl.sgorski.common.event.TicketCreatedEvent;
 import pl.sgorski.common.exception.IllegalStatusChangeException;
 import pl.sgorski.common.exception.NotCompatibleRoleException;
 import pl.sgorski.common.exception.TicketNotFoundException;
@@ -25,8 +27,7 @@ import pl.sgorski.ticket_service.model.TicketStatus;
 import pl.sgorski.ticket_service.repository.TicketRepository;
 import reactor.core.publisher.Mono;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -45,6 +46,9 @@ public class TicketServiceTests {
 
     @Mock
     private TicketMapper mapper;
+
+    @Mock
+    private EventService eventService;
 
     @InjectMocks
     private TicketService ticketService;
@@ -74,13 +78,34 @@ public class TicketServiceTests {
     }
 
     @Test
-    void shouldCreateTicket() {
+    void shouldCreateTicket_NotAssignedTechnician() {
         when(mapper.toTicket(any())).thenReturn(new Ticket());
         when(userClientService.getUserById(any())).thenReturn(Mono.just(userDto));
+        when(ticketRepository.save(any(Ticket.class))).thenReturn(new Ticket());
+        when(mapper.toTicketCreatedEvent(any(Ticket.class))).thenReturn(mock(TicketCreatedEvent.class));
 
         ticketService.createTicket(new CreateTicketRequest("test", "test"), UUID.randomUUID());
 
         verify(ticketRepository, times(1)).save(any(Ticket.class));
+        verify(eventService, times(1)).publishTicketCreatedEvent(any());
+        verify(eventService, never()).publishTicketAssignedEvent(any());
+    }
+
+    @Test
+    void shouldCreateTicket_AssignedTechnician() {
+        when(mapper.toTicket(any())).thenReturn(new Ticket());
+        when(userClientService.getUserById(any())).thenReturn(Mono.just(userDto));
+        Ticket ticketWithAssignedTechnician = new Ticket();
+        ticketWithAssignedTechnician.setAssigneeId(UUID.randomUUID());
+        when(ticketRepository.save(any(Ticket.class))).thenReturn(ticketWithAssignedTechnician);
+        when(mapper.toTicketCreatedEvent(any(Ticket.class))).thenReturn(mock(TicketCreatedEvent.class));
+        when(mapper.toTicketAssignedEvent(any(Ticket.class))).thenReturn(mock(TicketAssignedEvent.class));
+
+        ticketService.createTicket(new CreateTicketRequest("test", "test"), UUID.randomUUID());
+
+        verify(ticketRepository, times(1)).save(any(Ticket.class));
+        verify(eventService, times(1)).publishTicketCreatedEvent(any());
+        verify(eventService, times(1)).publishTicketAssignedEvent(any());
     }
 
     @Test
@@ -167,7 +192,9 @@ public class TicketServiceTests {
             when(userClientService.getUserById(nullable(UUID.class))).thenReturn(Mono.just(userDto));
             when(ticketRepository.findAllByReporterId(any(UUID.class),any(Pageable.class))).thenReturn(Page.empty());
 
-            var result = ticketService.getTicketsForCurrentUser(mock(Authentication.class), PageRequest.of(0, 10));
+            var mockAuth = mock(Authentication.class);
+            when(mockAuth.getName()).thenReturn(userDto.id().toString());
+            var result = ticketService.getTicketsForCurrentUser(mockAuth, PageRequest.of(0, 10));
 
             assertNotNull(result);
             verify(ticketRepository, never()).findAll(any(Pageable.class));
@@ -183,7 +210,9 @@ public class TicketServiceTests {
             mockAuthUtils.when(() -> AuthorityUtils.isTechnician(any())).thenReturn(false);
             when(userClientService.getUserById(nullable(UUID.class))).thenReturn(Mono.empty());
 
-            assertThrows(UserNotFoundException.class, () -> ticketService.getTicketsForCurrentUser(mock(Authentication.class), PageRequest.of(0, 10)));
+            var mockAuth = mock(Authentication.class);
+            when(mockAuth.getName()).thenReturn(userDto.id().toString());
+            assertThrows(UserNotFoundException.class, () -> ticketService.getTicketsForCurrentUser(mockAuth, PageRequest.of(0, 10)));
 
             verify(ticketRepository, never()).findAll(any(Pageable.class));
             verify(userClientService, times(1)).getUserById(nullable(UUID.class));
@@ -196,6 +225,7 @@ public class TicketServiceTests {
         when(ticketRepository.findById(anyLong())).thenReturn(Optional.of(new Ticket()));
         when(userClientService.getUserById(any(UUID.class))).thenReturn(Mono.just(userTechDto));
         when(ticketRepository.save(any(Ticket.class))).thenReturn(new Ticket());
+        when(mapper.toTicketAssignedEvent(any(Ticket.class))).thenReturn(mock(TicketAssignedEvent.class));
 
         Ticket res = ticketService.assignTicketById(1L, UUID.randomUUID());
 
@@ -203,6 +233,7 @@ public class TicketServiceTests {
         verify(ticketRepository, times(1)).findById(anyLong());
         verify(userClientService, times(1)).getUserById(any(UUID.class));
         verify(ticketRepository, times(1)).save(any(Ticket.class));
+        verify(eventService, times(1)).publishTicketAssignedEvent(any());
     }
 
     @Test
@@ -215,6 +246,7 @@ public class TicketServiceTests {
         verify(ticketRepository, times(1)).findById(anyLong());
         verify(userClientService, times(1)).getUserById(any(UUID.class));
         verify(ticketRepository, never()).save(any(Ticket.class));
+        verify(eventService, never()).publishTicketAssignedEvent(any());
     }
 
     @Test
@@ -227,6 +259,7 @@ public class TicketServiceTests {
         verify(ticketRepository, times(1)).findById(anyLong());
         verify(userClientService, times(1)).getUserById(any(UUID.class));
         verify(ticketRepository, never()).save(any(Ticket.class));
+        verify(eventService, never()).publishTicketAssignedEvent(any());
     }
 
     @Test
@@ -238,6 +271,7 @@ public class TicketServiceTests {
         verify(ticketRepository, times(1)).findById(anyLong());
         verify(userClientService, never()).getUserById(any(UUID.class));
         verify(ticketRepository, never()).save(any(Ticket.class));
+        verify(eventService, never()).publishTicketAssignedEvent(any());
     }
 
     @Test
@@ -252,6 +286,7 @@ public class TicketServiceTests {
         verify(ticketRepository, times(1)).findById(anyLong());
         verify(userClientService, times(1)).getUserById(any(UUID.class));
         verify(ticketRepository, never()).save(any(Ticket.class));
+        verify(eventService, never()).publishTicketAssignedEvent(any());
     }
 
     @Test
@@ -321,4 +356,34 @@ public class TicketServiceTests {
         verify(ticketRepository, times(1)).findById(anyLong());
         verify(ticketRepository, never()).save(any(Ticket.class));
     }
+
+    @Test
+    void isTicketCreator_ShouldReturnTrue_TicketCreator() {
+        Ticket ticket = mock(Ticket.class);
+        when(ticket.isCreator(any(UUID.class))).thenReturn(true);
+        when(ticketRepository.findById(anyLong())).thenReturn(Optional.of(ticket));
+
+        var result = ticketService.isTicketCreator(1L, UUID.randomUUID());
+
+        assertTrue(result);
+    }
+
+    @Test
+    void isTicketCreator_ShouldReturnFalse_NotTicketCreator() {
+        Ticket ticket = mock(Ticket.class);
+        when(ticket.isCreator(any(UUID.class))).thenReturn(false);
+        when(ticketRepository.findById(anyLong())).thenReturn(Optional.of(ticket));
+
+        var result = ticketService.isTicketCreator(1L, UUID.randomUUID());
+
+        assertFalse(result);
+    }
+
+    @Test
+    void isTicketCreator_ShouldThrow_TicketNotFound() {
+        when(ticketRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(TicketNotFoundException.class, () -> ticketService.isTicketCreator(1L, UUID.randomUUID()));
+    }
+
 }
