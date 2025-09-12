@@ -41,7 +41,8 @@ public class UserServiceTests {
 
     @Test
     void shouldCreateUserIfNotExists() {
-        when(jwt.getSubject()).thenReturn("test-user-id");
+        String userId = UUID.randomUUID().toString();
+        when(jwt.getSubject()).thenReturn(userId);
         when(userRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
         when(jwtDecodeService.getUser(any())).thenReturn(new User());
 
@@ -52,7 +53,8 @@ public class UserServiceTests {
 
     @Test
     void shouldNotCreateUserIfExists_RolesNotChanged() {
-        when(jwt.getSubject()).thenReturn("test-user-id");
+        String userId = UUID.randomUUID().toString();
+        when(jwt.getSubject()).thenReturn(userId);
         when(userRepository.findById(any(UUID.class))).thenReturn(Optional.of(new User()));
         when(jwtDecodeService.getRolesNames(any())).thenReturn(Set.of());
         when(roleService.mapToRoles(any())).thenReturn(Set.of());
@@ -65,7 +67,8 @@ public class UserServiceTests {
 
     @Test
     void shouldNotCreateUserIfExists_RolesChanged() {
-        when(jwt.getSubject()).thenReturn("test-user-id");
+        String userId = UUID.randomUUID().toString();
+        when(jwt.getSubject()).thenReturn(userId);
         when(userRepository.findById(any(UUID.class))).thenReturn(Optional.of(new User()));
         when(jwtDecodeService.getRolesNames(any())).thenReturn(Set.of());
         when(roleService.mapToRoles(any())).thenReturn(Set.of());

@@ -16,9 +16,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserController {
 
-    //TODO: Add users deletion or deactivation
-    //TODO: Add Swagger docs
-
     private final UserService userService;
     private final UserMapper userMapper;
 

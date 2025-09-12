@@ -27,6 +27,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -68,7 +69,9 @@ public class UserControllerTests {
         when(userService.getUserById(any(UUID.class))).thenReturn(new User());
         when(userMapper.toDto(any(User.class))).thenReturn(userDto);
 
-        mockMvc.perform(get("/api/users/me"))
+        String userId = UUID.randomUUID().toString();
+        mockMvc.perform(get("/api/users/me")
+                        .with(jwt().jwt(jwt -> jwt.subject(userId))))
                 .andExpect(status().isOk())
                 .andExpect(result -> {
                     String responseBody = result.getResponse().getContentAsString();
