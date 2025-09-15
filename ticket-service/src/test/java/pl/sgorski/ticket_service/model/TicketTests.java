@@ -4,8 +4,9 @@ import org.junit.jupiter.api.Test;
 import pl.sgorski.common.exception.IllegalStatusChangeException;
 import pl.sgorski.ticket_service.dto.UpdateTicketRequest;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TicketTests {
 
@@ -79,5 +80,27 @@ public class TicketTests {
         ticket.setStatus(TicketStatus.RESOLVED);
 
         assertThrows(IllegalStatusChangeException.class, () -> ticket.setStatus(TicketStatus.OPEN));
+    }
+
+    @Test
+    void isCreator_ShouldReturnTrue() {
+        UUID creatorId = UUID.randomUUID();
+        Ticket ticket = new Ticket();
+        ticket.setReporterId(creatorId);
+
+        boolean result = ticket.isCreator(creatorId);
+
+        assertTrue(result);
+    }
+
+    @Test
+    void isCreator_ShouldReturnFalse() {
+        UUID creatorId = UUID.randomUUID();
+        Ticket ticket = new Ticket();
+        ticket.setReporterId(creatorId);
+
+        boolean result = ticket.isCreator(UUID.randomUUID());
+
+        assertFalse(result);
     }
 }
