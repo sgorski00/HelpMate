@@ -11,6 +11,9 @@ logs:
 restart:
 	docker compose restart
 
+test:
+	mvn clean verify -Plocal -fn
+
 restart-app:
 	docker compose down user-service ticket-service notification-service comment-service
 	mvn clean package -DskipTests
