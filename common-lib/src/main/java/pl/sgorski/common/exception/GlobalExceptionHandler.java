@@ -2,12 +2,24 @@ package pl.sgorski.common.exception;
 
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(WebClientResponseException.class)
+    public ProblemDetail handleWebClientResponseException(WebClientResponseException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                ex.getStatusCode(),
+                ex.getResponseBodyAsString()
+        );
+        problemDetail.setTitle("Client Service Error");
+        return problemDetail;
+    }
 
     @ExceptionHandler(NotCompatibleRoleException.class)
     public ProblemDetail handleNotCompatibleRoleException(NotCompatibleRoleException ex) {
@@ -26,6 +38,16 @@ public class GlobalExceptionHandler {
                 "This ticket can't be changed: " + ex.getMessage()
         );
         problemDetail.setTitle("Ticket Update Error");
+        return problemDetail;
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ProblemDetail handleIllegalStateException(IllegalStateException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatusCode.valueOf(409),
+                "Operation can't be done: " + ex.getMessage()
+        );
+        problemDetail.setTitle("Illegal state exception");
         return problemDetail;
     }
 
@@ -49,6 +71,16 @@ public class GlobalExceptionHandler {
         return problemDetail;
     }
 
+    @ExceptionHandler(CommentNotFoundException.class)
+    public ProblemDetail handleCommentNotFoundException(CommentNotFoundException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatusCode.valueOf(404),
+                "Comment not found: " + ex.getMessage()
+        );
+        problemDetail.setTitle("Comment Not Found");
+        return problemDetail;
+    }
+
     @ExceptionHandler(JwtException.class)
     public ProblemDetail handleJwtException(JwtException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
@@ -56,6 +88,16 @@ public class GlobalExceptionHandler {
                 "Invalid Jwt: " + ex.getMessage()
         );
         problemDetail.setTitle("JWT Error");
+        return problemDetail;
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ProblemDetail handleAuthorizationDeniedException(AuthorizationDeniedException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatusCode.valueOf(403),
+                ex.getMessage()
+        );
+        problemDetail.setTitle("Authorization Denied");
         return problemDetail;
     }
 

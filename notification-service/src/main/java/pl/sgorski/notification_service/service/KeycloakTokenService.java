@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import pl.sgorski.notification_service.configuration.properties.KeycloakNotificationClientProperties;
+import reactor.core.publisher.Mono;
 
 @Service
 public class KeycloakTokenService {
@@ -19,7 +20,7 @@ public class KeycloakTokenService {
         this.keycloakNotificationClientProperties = keycloakNotificationClientProperties;
     }
 
-    public String getServiceToken() {
+    public Mono<String> getServiceToken() {
         return keycloakWebClient.post()
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(BodyInserters.fromFormData("grant_type", "client_credentials")
@@ -27,8 +28,7 @@ public class KeycloakTokenService {
                         .with("client_secret", keycloakNotificationClientProperties.secret()))
                 .retrieve()
                 .bodyToMono(TokenResponse.class)
-                .map(TokenResponse::accessToken)
-                .block();
+                .map(TokenResponse::accessToken);
     }
 
     private record TokenResponse (@JsonProperty("access_token") String accessToken) { }

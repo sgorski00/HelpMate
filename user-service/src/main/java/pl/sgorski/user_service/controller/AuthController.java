@@ -20,6 +20,8 @@ public class AuthController {
     public ResponseEntity<?> handleLogin(@AuthenticationPrincipal Jwt jwt) {
         //this endpoint should be called after successful login
         //it will create user if not exists and update roles if they changed
+
+        //TODO (optional): consider using filter after auth in securityfilterchain
         userService.crateUserIfNotExists(jwt);
         return ResponseEntity.ok(jwt.getTokenValue());
     }

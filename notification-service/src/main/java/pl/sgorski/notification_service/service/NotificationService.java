@@ -2,14 +2,12 @@ package pl.sgorski.notification_service.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import pl.sgorski.common.event.TicketEvent;
 import pl.sgorski.notification_service.model.Notification;
 import pl.sgorski.notification_service.model.NotificationStatus;
 import pl.sgorski.notification_service.repository.NotificationRepository;
 import reactor.core.publisher.Mono;
 
 import java.time.Instant;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor

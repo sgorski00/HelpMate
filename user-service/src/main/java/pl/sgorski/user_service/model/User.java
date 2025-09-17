@@ -8,6 +8,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
 import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Table(name = "users")
@@ -16,7 +17,7 @@ import java.util.Set;
 public class User {
 
     @Id
-    private String id;
+    private UUID id;
 
     @Column(nullable = false, unique = true)
     private String username;

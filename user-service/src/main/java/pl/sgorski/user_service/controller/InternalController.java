@@ -10,6 +10,8 @@ import pl.sgorski.user_service.mapper.UserMapper;
 import pl.sgorski.user_service.model.User;
 import pl.sgorski.user_service.service.UserService;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/internal")
 @RequiredArgsConstructor
@@ -20,7 +22,7 @@ public class InternalController {
 
     @GetMapping("/users/{id}")
     public ResponseEntity<?> getUserById(
-            @PathVariable String id
+            @PathVariable UUID id
     ) {
         User user = userService.getUserById(id);
         return ResponseEntity.ok(userMapper.toDto(user));

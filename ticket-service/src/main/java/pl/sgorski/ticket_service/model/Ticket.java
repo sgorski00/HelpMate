@@ -8,6 +8,7 @@ import pl.sgorski.common.exception.IllegalStatusChangeException;
 import pl.sgorski.ticket_service.dto.UpdateTicketRequest;
 
 import java.sql.Timestamp;
+import java.util.UUID;
 
 @Entity
 @Table(name = "tickets")
@@ -29,10 +30,10 @@ public class Ticket {
     private TicketStatus status;
 
     @Column(nullable = false)
-    private String reporterId;
+    private UUID reporterId;
 
     @Column(nullable = false)
-    private String assigneeId;
+    private UUID assigneeId;
 
     @CreationTimestamp
     private Timestamp createdAt;
@@ -65,5 +66,9 @@ public class Ticket {
 
     private boolean isModifiable() {
         return this.status == null || this.status.equals(TicketStatus.OPEN) || this.status.equals(TicketStatus.IN_PROGRESS);
+    }
+
+    public boolean isCreator(UUID userId) {
+        return this.reporterId.equals(userId);
     }
 }

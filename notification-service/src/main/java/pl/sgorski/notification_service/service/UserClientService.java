@@ -6,6 +6,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 import pl.sgorski.common.dto.UserDto;
 import reactor.core.publisher.Mono;
 
+import java.util.UUID;
+
 @Service
 public class UserClientService {
 
@@ -17,11 +19,13 @@ public class UserClientService {
         this.keycloakTokenService = keycloakTokenService;
     }
 
-    public Mono<UserDto> getUserById(String userId) {
-        return userServiceWebClient.get()
-                .uri("/api/internal/users/{id}", userId)
-                .header("Authorization", "Bearer " + keycloakTokenService.getServiceToken())
-                .retrieve()
-                .bodyToMono(UserDto.class);
+    public Mono<UserDto> getUserById(UUID userId) {
+        return keycloakTokenService.getServiceToken()
+                .flatMap(token -> userServiceWebClient.get()
+                        .uri("/api/internal/users/{id}", userId)
+                        .header("Authorization", "Bearer " + token)
+                        .retrieve()
+                        .bodyToMono(UserDto.class)
+                );
     }
 }

@@ -27,7 +27,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/users/me").authenticated()
                         .requestMatchers("/api/users/**").hasRole("ADMIN")
                         .requestMatchers("/api/auth/callback").permitAll()
-                        .requestMatchers("/api/internal/**").hasAnyRole("SERVICE_TICKET", "SERVICE_NOTIFICATION")
+                        .requestMatchers("/api/internal/**").hasAnyRole("SERVICE_TICKET", "SERVICE_NOTIFICATION", "SERVICE_COMMENT")
                         .anyRequest().denyAll()
                 )
                 .oauth2ResourceServer(oauth -> oauth

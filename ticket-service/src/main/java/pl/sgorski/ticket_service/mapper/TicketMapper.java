@@ -2,10 +2,10 @@ package pl.sgorski.ticket_service.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import pl.sgorski.common.dto.TicketDto;
 import pl.sgorski.common.event.TicketAssignedEvent;
 import pl.sgorski.common.event.TicketCreatedEvent;
 import pl.sgorski.ticket_service.dto.CreateTicketRequest;
-import pl.sgorski.ticket_service.dto.TicketEntityResponse;
 import pl.sgorski.ticket_service.model.Ticket;
 
 @Mapper(componentModel = "spring")
@@ -20,7 +20,7 @@ public interface TicketMapper {
     Ticket toTicket(CreateTicketRequest request);
 
     @Mapping(target = "status", source = "status.displayName")
-    TicketEntityResponse toDto(Ticket ticket);
+    TicketDto toDto(Ticket ticket);
 
     @Mapping(target = "ticketId", source = "id")
     TicketCreatedEvent toTicketCreatedEvent(Ticket ticket);

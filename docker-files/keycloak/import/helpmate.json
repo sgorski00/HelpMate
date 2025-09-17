@@ -71,6 +71,14 @@
       "containerId" : "1d4128ad-08cc-4cdc-96e1-907f363de67f",
       "attributes" : { }
     }, {
+      "id" : "45ac20e9-10fc-4c5c-b6a6-ce8edbccd054",
+      "name" : "SERVICE_COMMENT",
+      "description" : "",
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "1d4128ad-08cc-4cdc-96e1-907f363de67f",
+      "attributes" : { }
+    }, {
       "id" : "6f5c5167-864e-4bbd-bd72-99698fb9dec0",
       "name" : "SERVICE_NOTIFICATION",
       "description" : "",
@@ -275,6 +283,7 @@
         "containerId" : "7545bc07-1b16-44de-ba7a-5904d25cc7d4",
         "attributes" : { }
       } ],
+      "comment-service-client" : [ ],
       "helpmate-frontend" : [ ],
       "security-admin-console" : [ ],
       "user-service-client" : [ ],
@@ -430,6 +439,20 @@
     "disableableCredentialTypes" : [ ],
     "requiredActions" : [ ],
     "realmRoles" : [ "ADMIN", "USER" ],
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
+    "id" : "71416a8a-e807-4be4-b157-a6260435acb5",
+    "username" : "service-account-comment-service-client",
+    "emailVerified" : false,
+    "enabled" : true,
+    "createdTimestamp" : 1756894356505,
+    "totp" : false,
+    "serviceAccountClientId" : "comment-service-client",
+    "credentials" : [ ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "SERVICE_COMMENT", "default-roles-helpmate" ],
     "notBefore" : 0,
     "groups" : [ ]
   }, {
@@ -697,6 +720,47 @@
     "fullScopeAllowed" : false,
     "nodeReRegistrationTimeout" : 0,
     "defaultClientScopes" : [ "web-origins", "acr", "roles", "profile", "basic", "email" ],
+    "optionalClientScopes" : [ "address", "phone", "organization", "offline_access", "microprofile-jwt" ]
+  }, {
+    "id" : "29333fb2-241c-483d-aab6-d3a6f962a0e3",
+    "clientId" : "comment-service-client",
+    "name" : "Service client - comments module",
+    "description" : "",
+    "rootUrl" : "http://host.docker.internal:8084",
+    "adminUrl" : "",
+    "baseUrl" : "",
+    "surrogateAuthRequired" : false,
+    "enabled" : true,
+    "alwaysDisplayInConsole" : false,
+    "clientAuthenticatorType" : "client-secret",
+    "secret" : "2cDNxmVKSf5yqaBuYPMN7tifpK0kEhb2",
+    "redirectUris" : [ "http://host.docker.internal:8084/*" ],
+    "webOrigins" : [ "http://host.docker.internal:8084" ],
+    "notBefore" : 0,
+    "bearerOnly" : false,
+    "consentRequired" : false,
+    "standardFlowEnabled" : false,
+    "implicitFlowEnabled" : false,
+    "directAccessGrantsEnabled" : false,
+    "serviceAccountsEnabled" : true,
+    "publicClient" : false,
+    "frontchannelLogout" : true,
+    "protocol" : "openid-connect",
+    "attributes" : {
+      "realm_client" : "false",
+      "oidc.ciba.grant.enabled" : "false",
+      "client.secret.creation.time" : "1756894356",
+      "backchannel.logout.session.required" : "true",
+      "standard.token.exchange.enabled" : "false",
+      "frontchannel.logout.session.required" : "true",
+      "display.on.consent.screen" : "false",
+      "oauth2.device.authorization.grant.enabled" : "false",
+      "backchannel.logout.revoke.offline.tokens" : "false"
+    },
+    "authenticationFlowBindingOverrides" : { },
+    "fullScopeAllowed" : true,
+    "nodeReRegistrationTimeout" : -1,
+    "defaultClientScopes" : [ "web-origins", "service_account", "acr", "roles", "profile", "basic", "email" ],
     "optionalClientScopes" : [ "address", "phone", "organization", "offline_access", "microprofile-jwt" ]
   }, {
     "id" : "cf0b8f90-35cb-41e7-b0c4-6305b362c323",

@@ -1,6 +1,6 @@
 up:
 	mvn clean package -DskipTests
-	docker compose up -d
+	docker compose up --build -d
 
 down:
 	docker compose down
@@ -12,9 +12,9 @@ restart:
 	docker compose restart
 
 restart-app:
-	docker compose down user-service ticket-service notification-service
+	docker compose down user-service ticket-service notification-service comment-service
 	mvn clean package -DskipTests
-	docker compose up --build -d user-service ticket-service notification-service
+	docker compose up --build -d user-service ticket-service notification-service comment-service
 
 restart-ticket:
 	docker compose down ticket-service
@@ -30,6 +30,11 @@ restart-notification:
 	docker compose down notification-service
 	mvn clean package -pl notification-service -am -DskipTests
 	docker compose up --build -d notification-service
+
+restart-comment:
+	docker compose down comment-service
+	mvn clean package -pl comment-service -am -DskipTests
+	docker compose up --build -d comment-service
 
 stop:
 	docker stop $(docker ps -aq)
@@ -48,6 +53,9 @@ psql-ticket:
 
 psql-notification:
 	docker compose exec -it postgres-notification psql -U admin -d hm_notification_db
+
+psql-comment:
+	docker compose exec -it postgres-comment psql -U admin -d hm_comment_db
 
 rabbitmq-reset:
 	docker compose exec -it rabbitmq rabbitmqctl stop_app

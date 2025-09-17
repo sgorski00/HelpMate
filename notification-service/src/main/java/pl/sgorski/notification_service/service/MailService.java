@@ -8,8 +8,8 @@ import org.springframework.mail.MailException;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import pl.sgorski.common.event.CommentCreatedEvent;
 import pl.sgorski.common.event.TicketAssignedEvent;
 import pl.sgorski.common.event.TicketCreatedEvent;
 import pl.sgorski.notification_service.configuration.properties.MailProperties;
@@ -33,13 +33,13 @@ public class MailService {
             helper.setText(body, isHtml);
             helper.setFrom(mailProperties.username());
             mailSender.send(message);
-        } catch (MessagingException | MailException e) {
+        } catch (Exception e) {
             log.error("Failed to send email to {}: {}", to, e.getMessage());
             throw new MailSendException("Failed to send email to " + to, e);
         }
     }
 
-    public void sendTicketCreatedEmail(String to, TicketCreatedEvent payload) {
+    public void sendTicketCreatedEmail(String to, TicketCreatedEvent payload) throws MailSendException {
         String subject = "HelpMate - Ticket no. " + payload.ticketId() + " Created";
         String body = "<p>Your ticket has been created successfully.</p>";
         sendEmail(to, subject, body);
@@ -48,6 +48,13 @@ public class MailService {
     public void sendTicketAssignedEmail(String to, TicketAssignedEvent payload) {
         String subject = "HelpMate - Ticket no. " + payload.ticketId() + " has been assigned to you";
         String body = "<p>Check the application. A new ticket has been assigned to you.</p>";
+        sendEmail(to, subject, body);
+    }
+
+    public void sendCommentCreatedEmail(String to, CommentCreatedEvent payload) {
+        String subject = "HelpMate - New comment on your ticket no. " + payload.ticketId();
+        String body = "<p>A new comment has been added to your ticket. Check the details below.</p><br>" +
+                "<p><b>Message:</b>" + payload.content() + "</p>";
         sendEmail(to, subject, body);
     }
 }

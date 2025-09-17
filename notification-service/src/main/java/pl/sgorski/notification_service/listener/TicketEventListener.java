@@ -8,8 +8,7 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Service;
 import pl.sgorski.common.event.TicketAssignedEvent;
 import pl.sgorski.common.event.TicketCreatedEvent;
-import pl.sgorski.notification_service.service.MailService;
-import pl.sgorski.notification_service.service.NotificationProcessor;
+import pl.sgorski.notification_service.service.TicketNotificationProcessor;
 
 import java.util.UUID;
 
@@ -19,18 +18,16 @@ public class TicketEventListener {
 
     private final Queue ticketCreatedQueue;
     private final Queue ticketAssignedQueue;
-    private final NotificationProcessor notificationProcessor;
-    private final MailService mailService;
+    private final TicketNotificationProcessor notificationProcessor;
 
     public TicketEventListener(
             @Qualifier("ticketCreatedQueue") Queue ticketCreatedQueue,
             @Qualifier("ticketAssignedQueue") Queue ticketAssignedQueue,
-            NotificationProcessor notificationProcessor, MailService mailService
+            TicketNotificationProcessor notificationProcessor
     ) {
         this.ticketCreatedQueue = ticketCreatedQueue;
         this.ticketAssignedQueue = ticketAssignedQueue;
         this.notificationProcessor = notificationProcessor;
-        this.mailService = mailService;
     }
 
     @RabbitListener(queues = "#{ticketCreatedQueue.name}")
@@ -40,8 +37,7 @@ public class TicketEventListener {
             @Header("eventType") String eventType
     ) {
         log.info("Received ticket created message: id={}, payload={}", eventId, payload);
-        Runnable mailTask = () -> mailService.sendTicketCreatedEmail(payload.reporterId(), payload);
-        notificationProcessor.process(eventId, eventType, payload.reporterId(), mailTask);
+        notificationProcessor.processTicketCreatedEvent(eventId, eventType, payload).block(); // block to ensure event goes to dlq if fails
     }
 
     @RabbitListener(queues = "#{ticketAssignedQueue.name}")
@@ -51,7 +47,6 @@ public class TicketEventListener {
             @Header("eventType") String eventType
     ) {
         log.info("Received ticket assigned message: id={}, payload={}", eventId, payload);
-        Runnable mailTask = () -> mailService.sendTicketAssignedEmail(payload.assigneeId(), payload);
-        notificationProcessor.process(eventId, eventType, payload.assigneeId(), mailTask);
+        notificationProcessor.processTicketAssignedEvent(eventId, eventType, payload).block(); // block to ensure event goes to dlq if fails
     }
 }

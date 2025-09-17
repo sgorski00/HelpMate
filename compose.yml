@@ -122,6 +122,7 @@ services:
       - postgres-ticket
       - keycloak
       - rabbitmq
+      - user-service
     networks:
       - helpmate_network
 
@@ -156,6 +157,38 @@ services:
     networks:
       - helpmate_network
 
+  postgres-comment:
+    image: postgres:17.2
+    container_name: hm-psql-comment
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_COMMENT_DB}
+    ports:
+      - "${POSTGRES_COMMENT_PORT}:5432"
+    volumes:
+      - postgres-comment-data:/var/lib/postgresql/data
+    networks:
+      - helpmate_network
+
+  comment-service:
+    build:
+      context: .
+      dockerfile: docker-files/comment-service/Dockerfile
+    container_name: hm-comment-service
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "${COMMENT_SERVICE_PORT}:8080"
+    depends_on:
+      - postgres-comment
+      - keycloak
+      - rabbitmq
+      - user-service
+    networks:
+      - helpmate_network
+
 networks:
   helpmate_network:
     driver: bridge
@@ -165,3 +198,4 @@ volumes:
   postgres-user-data:
   postgres-ticket-data:
   postgres-notification-data:
+  postgres-comment-data:

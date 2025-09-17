@@ -14,6 +14,7 @@ import pl.sgorski.ticket_service.model.TicketStatus;
 import pl.sgorski.ticket_service.service.TicketService;
 
 import java.security.Principal;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/tickets")
@@ -28,7 +29,7 @@ public class TicketController {
             @Valid @RequestBody CreateTicketRequest createTicketRequest,
             Principal principal
     ) {
-        var loggedUserId = principal.getName();
+        var loggedUserId = UUID.fromString(principal.getName());
         var ticket = ticketService.createTicket(createTicketRequest, loggedUserId);
         return ResponseEntity.status(201).body(ticketMapper.toDto(ticket));
     }
@@ -37,7 +38,7 @@ public class TicketController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('TECHNICIAN')")
     public ResponseEntity<?> assignTicket(
             @PathVariable Long id,
-            @RequestParam(name = "assignee") String assigneeId
+            @RequestParam(name = "assignee") UUID assigneeId
     ) {
         var ticket = ticketService.assignTicketById(id, assigneeId);
         return ResponseEntity.ok(ticketMapper.toDto(ticket));
@@ -54,7 +55,7 @@ public class TicketController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('TECHNICIAN') or @ticketSecurity.isTicketCreator(#id, authentication.exchangeName)")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TECHNICIAN') or @ticketSecurity.isTicketCreator(#id, authentication.name)")
     public ResponseEntity<?> updateTicket(
             @PathVariable Long id,
             @Valid @RequestBody UpdateTicketRequest updateTicketRequest
@@ -64,7 +65,7 @@ public class TicketController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('TECHNICIAN') or @ticketSecurity.isTicketCreator(#id, authentication.exchangeName)")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TECHNICIAN') or @ticketSecurity.isTicketCreator(#id, authentication.name)")
     public ResponseEntity<?> getTicketById(@PathVariable Long id) {
         var ticket = ticketService.getTicketById(id);
         return ResponseEntity.ok(ticketMapper.toDto(ticket));
