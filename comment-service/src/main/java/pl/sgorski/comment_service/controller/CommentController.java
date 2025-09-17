@@ -34,10 +34,22 @@ public class CommentController {
                 .body(commentMapper.toResponse(commentService.saveComment(comment)));
     }
 
-    @PutMapping("/{id}/delete")
+    @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or @commentSecurity.isCommentAuthor(#id, authentication.name)")
     public ResponseEntity<?> deleteComment(@PathVariable Long id) {
         commentService.deleteCommentById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TECHNICIAN') or @commentSecurity.isTicketCreator(#ticketId, authentication.name)")
+    public ResponseEntity<?> getComments(
+            @RequestParam("ticketId") Long ticketId
+    ) {
+        var comments = commentService.getCommentsByTicketId(ticketId);
+        return ResponseEntity.ok(comments.stream()
+                .map(commentMapper::toResponse)
+                .toList()
+        );
     }
 }

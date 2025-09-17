@@ -8,7 +8,6 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Service;
 import pl.sgorski.common.event.TicketAssignedEvent;
 import pl.sgorski.common.event.TicketCreatedEvent;
-import pl.sgorski.notification_service.service.MailService;
 import pl.sgorski.notification_service.service.TicketNotificationProcessor;
 
 import java.util.UUID;

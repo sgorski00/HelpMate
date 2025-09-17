@@ -49,9 +49,7 @@ class EventServiceTests {
         when(event.ticketId()).thenReturn("123");
 
         eventService.publishTicketCreatedEvent(event);
-        for (TransactionSynchronization sync : TransactionSynchronizationManager.getSynchronizations()) {
-            sync.afterCommit();
-        }
+        commitTransaction();
 
         verify(rabbitTemplate).convertAndSend(eq("test.exchange"), eq("test.created"), eq(event), any(MessagePostProcessor.class));
     }
@@ -64,19 +62,23 @@ class EventServiceTests {
         when(event.ticketId()).thenReturn("456");
 
         eventService.publishTicketAssignedEvent(event);
-        for (TransactionSynchronization sync : TransactionSynchronizationManager.getSynchronizations()) {
-            sync.afterCommit();
-        }
+        commitTransaction();
 
         verify(rabbitTemplate).convertAndSend(eq("test.exchange"), eq("test.assigned"), eq(event), any(MessagePostProcessor.class));
     }
 
     @Test
-    void shouldNotPublishEventIfTransactionNotCommitted() {
+    void shouldNotPublishEvent_TransactionNotCommitted() {
         TicketCreatedEvent event = mock(TicketCreatedEvent.class);
 
         eventService.publishTicketCreatedEvent(event);
 
         verify(rabbitTemplate, never()).convertAndSend(anyString(), Optional.of(anyString()), any(), any());
+    }
+
+    private void commitTransaction() {
+        for (TransactionSynchronization sync : TransactionSynchronizationManager.getSynchronizations()) {
+            sync.afterCommit();
+        }
     }
 }
