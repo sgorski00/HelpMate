@@ -149,7 +149,9 @@
                         <excludes>
                             <exclude>**/mapper/**</exclude>
                             <exclude>**/config/**</exclude>
+                            <exclude>**/configuration/**</exclude>
                             <exclude>**/exception/**</exclude>
+                            <exclude>**/event/**</exclude>
                         </excludes>
                     </configuration>
                 </plugin>

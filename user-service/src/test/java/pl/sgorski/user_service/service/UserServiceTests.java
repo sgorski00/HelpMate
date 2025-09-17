@@ -122,7 +122,7 @@ public class UserServiceTests {
 
     @Test
     void shouldNotFindUserById_UserNotFoundException() {
-        when(userRepository.findById(any(UUID.class))).thenThrow(new UserNotFoundException("User not found"));
+        when(userRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
 
         assertThrows(UserNotFoundException.class, () -> userService.getUserById(UUID.randomUUID()));
     }

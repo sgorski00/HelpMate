@@ -28,7 +28,7 @@ public class CommentNotificationProcessor {
         return ticketClientService.getTicketById(ticketId)
                 .switchIfEmpty(Mono.error(new TicketNotFoundException("Ticket not found with id: " + ticketId)))
                 .flatMap(ticket -> {
-                    if(ticket.reporterId().equals(event.authorId())){
+                    if (ticket.reporterId().equals(event.authorId())) {
                         log.info("Skipping notification for comment with id: {} as author is the same as reporter", event.id());
                         return Mono.empty();
                     }
@@ -37,12 +37,14 @@ public class CommentNotificationProcessor {
                             .flatMap(recipient -> {
                                 Notification notification = new Notification(eventId, eventType, NotificationChannel.EMAIL, recipient);
                                 return notificationService.save(notification)
-                                        .flatMap(saved -> Mono.just(recipient.email())
-                                                .doOnNext(mail -> mailService.sendCommentCreatedEmail(mail, event))
-                                                .then(notificationService.updateStatusById(saved.getId(), NotificationStatus.SENT))
-                                        )
-                                        .onErrorResume(e -> notificationService.updateStatusById(notification.getId(), NotificationStatus.FAILED)
-                                                .then(Mono.error(new RuntimeException("Failed to send notification: " + e)))
+                                        .flatMap(saved -> Mono.fromCallable(() -> {
+                                                            mailService.sendCommentCreatedEmail(recipient.email(), event);
+                                                            return saved.getId();
+                                                        })
+                                                        .flatMap(id -> notificationService.updateStatusById(id, NotificationStatus.SENT))
+                                                        .onErrorResume(e -> notificationService.updateStatusById(saved.getId(), NotificationStatus.FAILED)
+                                                                .then(Mono.error(new RuntimeException("Failed to send notification: " + e)))
+                                                        )
                                         );
                             });
                 })

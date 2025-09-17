@@ -3,6 +3,7 @@ package pl.sgorski.user_service.service;
 import jakarta.validation.Validator;
 import jakarta.validation.ConstraintViolation;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import pl.sgorski.common.dto.UserDto;
@@ -11,6 +12,7 @@ import pl.sgorski.user_service.model.User;
 
 import java.util.*;
 
+@Log4j2
 @Service
 @RequiredArgsConstructor
 public class JwtDecodeService {
@@ -41,10 +43,11 @@ public class JwtDecodeService {
             Map<String, List<String>> realmAccess = jwt.getClaim("realm_access");
             if(realmAccess.get("roles") instanceof List<String> list) {
                 return new HashSet<>(list);
-            }else {
-                throw new IllegalArgumentException("Invalid roles format in JWT");
+            } else {
+                throw new IllegalArgumentException("Invalid roles format in JWT: " + realmAccess);
             }
         } catch (Exception e) {
+            log.warn("Could not extract roles from JWT: {}", e.getMessage());
             return Set.of();
         }
     }

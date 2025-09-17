@@ -33,13 +33,13 @@ public class MailService {
             helper.setText(body, isHtml);
             helper.setFrom(mailProperties.username());
             mailSender.send(message);
-        } catch (MessagingException | MailException e) {
+        } catch (Exception e) {
             log.error("Failed to send email to {}: {}", to, e.getMessage());
             throw new MailSendException("Failed to send email to " + to, e);
         }
     }
 
-    public void sendTicketCreatedEmail(String to, TicketCreatedEvent payload) {
+    public void sendTicketCreatedEmail(String to, TicketCreatedEvent payload) throws MailSendException {
         String subject = "HelpMate - Ticket no. " + payload.ticketId() + " Created";
         String body = "<p>Your ticket has been created successfully.</p>";
         sendEmail(to, subject, body);

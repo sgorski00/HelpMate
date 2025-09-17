@@ -39,12 +39,14 @@ public class TicketNotificationProcessor {
                 .flatMap(user -> {
                     Notification notification = new Notification(eventId, eventType, NotificationChannel.EMAIL, user);
                     return notificationService.save(notification)
-                            .flatMap(saved -> Mono.just(user.email())
-                                    .doOnNext(mailSender)
-                                    .then(notificationService.updateStatusById(saved.getId(), NotificationStatus.SENT))
-                            )
-                            .onErrorResume(e -> notificationService.updateStatusById(notification.getId(), NotificationStatus.FAILED)
-                                    .then(Mono.error(new RuntimeException("Failed to send notification: " + e)))
+                            .flatMap(saved -> Mono.fromCallable(() -> {
+                                                mailSender.accept(user.email());
+                                                return saved.getId();
+                                            })
+                                            .flatMap(notificationId -> notificationService.updateStatusById(notificationId, NotificationStatus.SENT))
+                                            .onErrorResume(e -> notificationService.updateStatusById(saved.getId(), NotificationStatus.FAILED)
+                                                    .then(Mono.error(new RuntimeException("Failed to send notification: " + e)))
+                                            )
                             );
                 })
                 .doOnError(e -> log.error("Error processing ticket notification with id: {}, error message: {}", eventId, e.getMessage()))
